@@ -13,10 +13,14 @@ import '../models/calendar_event.dart';
 ///
 /// Supports Android, Linux, and Windows platforms.
 class NotificationService {
-  NotificationService();
+  NotificationService({
+    FlutterLocalNotificationsPlugin? plugin,
+    Future<TimezoneInfo> Function()? timeZoneProvider,
+  })  : _plugin = plugin ?? FlutterLocalNotificationsPlugin(),
+        _timeZoneProvider = timeZoneProvider ?? FlutterTimezone.getLocalTimezone;
 
-  final FlutterLocalNotificationsPlugin _plugin =
-      FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _plugin;
+  final Future<TimezoneInfo> Function() _timeZoneProvider;
 
   static const _channelId = 'calendar_reminders';
   static const _windowsAppId = 'com.tcamp.calendar';
@@ -143,7 +147,7 @@ class NotificationService {
   Future<String?> _configureLocalTimeZone() async {
     try {
       // Use flutter_timezone to get the correct timezone name on all platforms
-      final timezoneInfo = await FlutterTimezone.getLocalTimezone();
+      final timezoneInfo = await _timeZoneProvider();
       final timeZoneName = timezoneInfo.identifier;
       tz.setLocalLocation(tz.getLocation(timeZoneName));
       return timeZoneName;
@@ -171,7 +175,7 @@ class NotificationService {
 
   Future<String?> _getSystemTimeZoneId() async {
     try {
-      final timezoneInfo = await FlutterTimezone.getLocalTimezone();
+      final timezoneInfo = await _timeZoneProvider();
       return timezoneInfo.identifier;
     } catch (_) {
       return null;

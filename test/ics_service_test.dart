@@ -98,4 +98,29 @@ void main() {
     expect(imported.length, 1);
     expect(imported.first.description, 'First linesecond linethird line');
   });
+
+  test('ICS import skips events with missing or invalid dates', () {
+    const service = IcsService();
+    const missingStart = 'BEGIN:VCALENDAR\n'
+        'VERSION:2.0\n'
+        'BEGIN:VEVENT\n'
+        'UID:no-start\n'
+        'DTEND:20260117T100000Z\n'
+        'SUMMARY:No Start\n'
+        'END:VEVENT\n'
+        'END:VCALENDAR';
+
+    const invalidDate = 'BEGIN:VCALENDAR\n'
+        'VERSION:2.0\n'
+        'BEGIN:VEVENT\n'
+        'UID:bad-date\n'
+        'DTSTART:INVALID\n'
+        'DTEND:20260117T100000Z\n'
+        'SUMMARY:Bad Date\n'
+        'END:VEVENT\n'
+        'END:VCALENDAR';
+
+    expect(service.importFromIcs(missingStart), isEmpty);
+    expect(service.importFromIcs(invalidDate), isEmpty);
+  });
 }

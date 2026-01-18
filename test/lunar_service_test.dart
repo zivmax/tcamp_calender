@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:lunar/lunar.dart';
 
 import 'package:tcamp_calender/services/lunar_service.dart';
 
@@ -25,5 +26,31 @@ void main() {
 
     final resultEn = service.formatFullLunar(DateTime(2026, 1, 17), locale: 'en');
     expect(resultEn, '');
+  });
+
+  test('formatLunar returns empty for null/empty locale', () {
+    const service = LunarService();
+    expect(service.formatLunar(DateTime(2026, 1, 17)), '');
+    expect(service.formatLunar(DateTime(2026, 1, 17), locale: ''), '');
+  });
+
+  test('formatFullLunar returns empty for null locale', () {
+    const service = LunarService();
+    expect(service.formatFullLunar(DateTime(2026, 1, 17)), '');
+  });
+
+  test('formatLunar returns month name on lunar first day', () {
+    const service = LunarService();
+    var date = DateTime(2026, 1, 1);
+    while (date.year == 2026) {
+      final dayName = Solar.fromDate(date).getLunar().getDayInChinese();
+      if (dayName == '初一') {
+        final text = service.formatLunar(date, locale: 'zh');
+        expect(text.contains('月'), isTrue);
+        return;
+      }
+      date = date.add(const Duration(days: 1));
+    }
+    fail('Could not find lunar first day in 2026');
   });
 }
