@@ -51,32 +51,34 @@ void main() {
   });
 
   test('add/update/delete event', () async {
-    final event = repository.createEmpty(DateTime(2026, 1, 17, 9, 0));
-    event
-      ..title = 'Meeting'
-      ..description = 'Discuss roadmap'
-      ..location = 'Room A';
+    final baseEvent = repository.createEmpty(DateTime(2026, 1, 17, 9, 0));
+    final event = baseEvent.copyWith(
+      title: 'Meeting',
+      description: 'Discuss roadmap',
+      location: 'Room A',
+    );
 
     await repository.addEvent(event);
     expect(repository.events.length, 1);
     expect(notificationService.scheduled, 1);
 
-    event.title = 'Updated Meeting';
-    await repository.updateEvent(event);
+    final updatedEvent = event.copyWith(title: 'Updated Meeting');
+    await repository.updateEvent(updatedEvent);
     expect(repository.events.first.title, 'Updated Meeting');
     expect(notificationService.canceled, 1);
     expect(notificationService.scheduled, 2);
 
-    await repository.deleteEvent(event);
+    await repository.deleteEvent(updatedEvent);
     expect(repository.events.isEmpty, true);
     expect(notificationService.canceled, 2);
   });
 
   test('recurring weekly event expansion', () async {
-    final event = repository.createEmpty(DateTime(2026, 1, 12, 9, 0)); // Monday
-    event
-      ..title = 'Gym'
-      ..rrule = 'FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,WE';
+    final baseEvent = repository.createEmpty(DateTime(2026, 1, 12, 9, 0)); // Monday
+    final event = baseEvent.copyWith(
+      title: 'Gym',
+      rrule: 'FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,WE',
+    );
 
     await repository.addEvent(event);
 
@@ -98,12 +100,13 @@ void main() {
   });
 
   test('all-day events do not appear on next day', () async {
-    final event = repository.createEmpty(DateTime(2026, 1, 17, 0, 0));
-    event
-      ..title = 'All Day'
-      ..isAllDay = true
-      ..start = DateTime(2026, 1, 17)
-      ..end = DateTime(2026, 1, 18);
+    final baseEvent = repository.createEmpty(DateTime(2026, 1, 17, 0, 0));
+    final event = baseEvent.copyWith(
+      title: 'All Day',
+      isAllDay: true,
+      start: DateTime(2026, 1, 17),
+      end: DateTime(2026, 1, 18),
+    );
 
     await repository.addEvent(event);
 

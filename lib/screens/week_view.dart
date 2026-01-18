@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:tcamp_calender/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-import '../services/event_repository.dart';
+import '../l10n/app_localizations.dart';
 import '../models/calendar_event.dart';
+import '../services/event_repository.dart';
 import 'event_detail_screen.dart';
 import 'event_form_screen.dart';
 
@@ -153,16 +153,16 @@ class _WeekViewState extends State<WeekView> {
 }
 
 class WeekPage extends StatefulWidget {
-  final List<DateTime> weekDays;
-  final double initialScrollOffset;
-  final ValueChanged<double>? onScroll;
-
   const WeekPage({
     super.key,
     required this.weekDays,
     this.initialScrollOffset = 0.0,
     this.onScroll,
   });
+
+  final List<DateTime> weekDays;
+  final double initialScrollOffset;
+  final ValueChanged<double>? onScroll;
 
   @override
   State<WeekPage> createState() => _WeekPageState();
@@ -299,7 +299,7 @@ class _WeekPageState extends State<WeekPage> {
                       return SizedBox(
                         height: 60.0,
                         child: Text(
-                          "$index:00",
+                          '$index:00',
                           style: const TextStyle(fontSize: 10, color: Colors.grey),
                           textAlign: TextAlign.center,
                         ),
@@ -329,7 +329,7 @@ class _WeekPageState extends State<WeekPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: weekDays.map((day) {
                              return Expanded(
-                               child: Container(
+                               child: DecoratedBox(
                                  decoration: BoxDecoration(
                                     border: Border(right: BorderSide(color: Colors.grey.withValues(alpha: Colors.grey.a * 0.1))),
                                  ),
@@ -351,7 +351,7 @@ class _WeekPageState extends State<WeekPage> {
                                               final minute = (tapMinutes % 60).toInt();
                                               final newEventDate = DateTime(day.year, day.month, day.day, hour, minute);
                                               Navigator.of(context).push(
-                                                MaterialPageRoute(
+                                                MaterialPageRoute<void>(
                                                   builder: (_) => EventFormScreen(initialDate: newEventDate),
                                                 ),
                                               );
@@ -400,7 +400,7 @@ class _WeekPageState extends State<WeekPage> {
       child: GestureDetector(
         onTap: () {
             Navigator.of(context).push(
-              MaterialPageRoute(
+              MaterialPageRoute<void>(
                 builder: (_) => EventDetailScreen(event: event),
               ),
             );
@@ -428,7 +428,7 @@ class _WeekPageState extends State<WeekPage> {
       child: GestureDetector(
         onTap: () {
           Navigator.of(context).push(
-            MaterialPageRoute(
+            MaterialPageRoute<void>(
               builder: (_) => EventDetailScreen(event: event),
             ),
           );

@@ -8,10 +8,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
 
+import 'package:tcamp_calender/l10n/app_localizations.dart';
 import 'package:tcamp_calender/models/calendar_event.dart';
 import 'package:tcamp_calender/screens/home_screen.dart';
 import 'package:tcamp_calender/services/event_repository.dart';
@@ -48,7 +50,7 @@ void main() {
   });
 
   testWidgets('Home screen navigation renders views', (WidgetTester tester) async {
-    final icsService = IcsService();
+    const icsService = IcsService();
     final subscriptionService = SubscriptionService(icsService: icsService);
     const lunarService = LunarService();
 
@@ -61,6 +63,13 @@ void main() {
           Provider<LunarService>.value(value: lunarService),
         ],
         child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           home: HomeScreen(
             lunarService: lunarService,
             icsService: icsService,

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:tcamp_calender/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/calendar_event.dart';
 import '../services/event_repository.dart';
 import '../services/lunar_service.dart';
@@ -121,7 +121,7 @@ class _MonthViewState extends State<MonthView> {
                       event: event,
                       onTap: () {
                         Navigator.of(context).push(
-                          MaterialPageRoute(
+                          MaterialPageRoute<void>(
                             builder: (_) => EventDetailScreen(event: event),
                           ),
                         );
@@ -138,7 +138,7 @@ class _MonthViewState extends State<MonthView> {
             child: FilledButton.icon(
               onPressed: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(
+                  MaterialPageRoute<void>(
                     builder: (_) => EventFormScreen(initialDate: _selectedDay),
                   ),
                 );

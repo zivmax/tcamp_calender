@@ -12,7 +12,7 @@ void main() {
   });
 
   test('save and load subscriptions', () async {
-    final service = SubscriptionService(icsService: IcsService());
+    final service = SubscriptionService(icsService: const IcsService());
 
     await service.saveSubscriptions(['https://example.com/a.ics']);
     final loaded = await service.loadSubscriptions();
@@ -21,7 +21,7 @@ void main() {
   });
 
   test('fetch subscriptions returns events for success responses', () async {
-    final icsService = IcsService();
+    const icsService = IcsService();
     final client = MockClient((request) async {
       if (request.url.toString().contains('good')) {
         const content = 'BEGIN:VCALENDAR\n'

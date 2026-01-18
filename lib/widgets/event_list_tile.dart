@@ -1,27 +1,85 @@
 import 'package:flutter/material.dart';
-import 'package:tcamp_calender/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
+import '../l10n/app_localizations.dart';
 import '../models/calendar_event.dart';
 
+/// A list tile for displaying calendar event summary.
+///
+/// Shows event title, time range, and optional location.
 class EventListTile extends StatelessWidget {
-  const EventListTile({super.key, required this.event, this.onTap});
+  const EventListTile({
+    super.key,
+    required this.event,
+    this.onTap,
+  });
 
+  /// The event to display.
   final CalendarEvent event;
+
+  /// Callback when the tile is tapped.
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     final locale = Localizations.localeOf(context).toString();
+    final timeFormat = DateFormat.Hm(locale);
+
     final timeRange = event.isAllDay
-        ? AppLocalizations.of(context)!.allDay
-        : '${DateFormat.Hm(locale).format(event.start)} - ${DateFormat.Hm(locale).format(event.end)}';
+        ? l10n.allDay
+        : '${timeFormat.format(event.start)} - ${timeFormat.format(event.end)}';
+
+    final title = event.title.isEmpty ? l10n.untitled : event.title;
 
     return ListTile(
-      title: Text(event.title.isEmpty ? AppLocalizations.of(context)!.untitled : event.title),
+      leading: _buildLeadingIndicator(theme),
+      title: Text(
+        title,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
       subtitle: Text(timeRange),
-      trailing: event.location.isEmpty ? null : Text(event.location),
+      trailing: event.location.isEmpty
+          ? null
+          : Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.place,
+                  size: 16,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 4),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 100),
+                  child: Text(
+                    event.location,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ],
+            ),
       onTap: onTap,
     );
   }
+
+  Widget _buildLeadingIndicator(ThemeData theme) {
+    return Container(
+      width: 4,
+      height: 40,
+      decoration: BoxDecoration(
+        color: event.isRecurring
+            ? theme.colorScheme.secondary
+            : theme.colorScheme.primary,
+        borderRadius: BorderRadius.circular(2),
+      ),
+    );
+  }
 }
+

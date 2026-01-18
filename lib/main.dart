@@ -1,27 +1,70 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:tcamp_calender/l10n/app_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-import 'services/settings_service.dart';
-
+import 'l10n/app_localizations.dart';
 import 'screens/home_screen.dart';
 import 'services/event_repository.dart';
 import 'services/ics_service.dart';
 import 'services/lunar_service.dart';
 import 'services/notification_service.dart';
+import 'services/settings_service.dart';
 import 'services/subscription_service.dart';
+import 'theme/app_theme.dart';
 
+/// Application entry point.
+///
+/// Initializes all services before running the app.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Use google_fonts in offline mode (do not fetch from network).
+  // Disable runtime font fetching for offline use
   GoogleFonts.config.allowRuntimeFetching = false;
 
+  // Initialize storage
   await Hive.initFlutter();
 
+  // Initialize services
+  final services = await _initializeServices();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: services.eventRepository),
+        Provider.value(value: services.notificationService),
+        Provider.value(value: services.icsService),
+        Provider.value(value: services.subscriptionService),
+        Provider.value(value: services.lunarService),
+        ChangeNotifierProvider.value(value: services.settingsService),
+      ],
+      child: const TCampCalendarApp(),
+    ),
+  );
+}
+
+/// Container for all application services.
+class AppServices {
+  const AppServices({
+    required this.eventRepository,
+    required this.notificationService,
+    required this.icsService,
+    required this.subscriptionService,
+    required this.lunarService,
+    required this.settingsService,
+  });
+
+  final EventRepository eventRepository;
+  final NotificationService notificationService;
+  final IcsService icsService;
+  final SubscriptionService subscriptionService;
+  final LunarService lunarService;
+  final SettingsService settingsService;
+}
+
+/// Initializes all application services.
+Future<AppServices> _initializeServices() async {
   final notificationService = NotificationService();
   await notificationService.init();
 
@@ -30,52 +73,39 @@ Future<void> main() async {
   );
   await eventRepository.init();
 
-  final icsService = IcsService();
+  const icsService = IcsService();
   final subscriptionService = SubscriptionService(icsService: icsService);
   const lunarService = LunarService();
 
   final settingsService = SettingsService();
   await settingsService.load();
 
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider<EventRepository>.value(value: eventRepository),
-        Provider<NotificationService>.value(value: notificationService),
-        Provider<IcsService>.value(value: icsService),
-        Provider<SubscriptionService>.value(value: subscriptionService),
-        Provider<LunarService>.value(value: lunarService),
-        ChangeNotifierProvider<SettingsService>.value(value: settingsService),
-      ],
-      child: const TCampCalendarApp(),
-    ),
+  return AppServices(
+    eventRepository: eventRepository,
+    notificationService: notificationService,
+    icsService: icsService,
+    subscriptionService: subscriptionService,
+    lunarService: lunarService,
+    settingsService: settingsService,
   );
 }
 
+/// The root widget of the TCamp Calendar application.
 class TCampCalendarApp extends StatelessWidget {
   const TCampCalendarApp({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final settingsService = context.watch<SettingsService>();
     final icsService = context.read<IcsService>();
     final subscriptionService = context.read<SubscriptionService>();
     final lunarService = context.read<LunarService>();
 
-    final baseTheme = ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
-      useMaterial3: true,
-      // Use bundled Noto Sans SC for consistent Chinese rendering.
-      fontFamily: 'Noto Sans SC',
-    );
-
-    final adjustedTextTheme = baseTheme.textTheme
-        .apply(fontFamily: 'Noto Sans SC')
-        .applyWeight(FontWeight.w700);
-
-    final appTheme = baseTheme.copyWith(textTheme: adjustedTextTheme);
-
     return MaterialApp(
-      title: AppLocalizations.of(context)?.appTitle ?? 'TCamp Calendar',
+      title: 'TCamp Calendar',
+      debugShowCheckedModeBanner: false,
+      
+      // Localization
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -83,8 +113,11 @@ class TCampCalendarApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      locale: context.watch<SettingsService>().locale,
-      theme: appTheme,
+      locale: settingsService.locale,
+      
+      // Theming
+      theme: AppTheme.light(),
+      
       home: HomeScreen(
         lunarService: lunarService,
         icsService: icsService,
@@ -94,24 +127,3 @@ class TCampCalendarApp extends StatelessWidget {
   }
 }
 
-extension TextThemeWeight on TextTheme {
-  TextTheme applyWeight(FontWeight weight) {
-    return copyWith(
-      displayLarge: displayLarge?.copyWith(fontWeight: weight),
-      displayMedium: displayMedium?.copyWith(fontWeight: weight),
-      displaySmall: displaySmall?.copyWith(fontWeight: weight),
-      headlineLarge: headlineLarge?.copyWith(fontWeight: weight),
-      headlineMedium: headlineMedium?.copyWith(fontWeight: weight),
-      headlineSmall: headlineSmall?.copyWith(fontWeight: weight),
-      titleLarge: titleLarge?.copyWith(fontWeight: weight),
-      titleMedium: titleMedium?.copyWith(fontWeight: weight),
-      titleSmall: titleSmall?.copyWith(fontWeight: weight),
-      bodyLarge: bodyLarge?.copyWith(fontWeight: weight),
-      bodyMedium: bodyMedium?.copyWith(fontWeight: weight),
-      bodySmall: bodySmall?.copyWith(fontWeight: weight),
-      labelLarge: labelLarge?.copyWith(fontWeight: weight),
-      labelMedium: labelMedium?.copyWith(fontWeight: weight),
-      labelSmall: labelSmall?.copyWith(fontWeight: weight),
-    );
-  }
-}

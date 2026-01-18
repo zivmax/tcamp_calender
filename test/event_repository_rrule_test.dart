@@ -63,10 +63,11 @@ void main() {
   });
 
   test('daily recurrence respects interval and count', () async {
-    final event = repository.createEmpty(DateTime(2026, 1, 1, 9, 0));
-    event
-      ..title = 'Routine'
-      ..rrule = 'FREQ=DAILY;INTERVAL=2;COUNT=3';
+    final baseEvent = repository.createEmpty(DateTime(2026, 1, 1, 9, 0));
+    final event = baseEvent.copyWith(
+      title: 'Routine',
+      rrule: 'FREQ=DAILY;INTERVAL=2;COUNT=3',
+    );
 
     await repository.addEvent(event);
 
@@ -81,8 +82,8 @@ void main() {
   });
 
   test('daily recurrence respects until', () async {
-    final event = repository.createEmpty(DateTime(2026, 1, 1, 10, 0));
-    event.rrule = 'FREQ=DAILY;UNTIL=20260103T000000Z';
+    final baseEvent = repository.createEmpty(DateTime(2026, 1, 1, 10, 0));
+    final event = baseEvent.copyWith(rrule: 'FREQ=DAILY;UNTIL=20260103T000000Z');
 
     await repository.addEvent(event);
 
@@ -92,15 +93,17 @@ void main() {
   });
 
   test('monthly and yearly recurrence', () async {
-    final monthly = repository.createEmpty(DateTime(2026, 1, 15, 9, 0));
-    monthly
-      ..title = 'Monthly'
-      ..rrule = 'FREQ=MONTHLY;INTERVAL=1';
+    final monthlyBase = repository.createEmpty(DateTime(2026, 1, 15, 9, 0));
+    final monthly = monthlyBase.copyWith(
+      title: 'Monthly',
+      rrule: 'FREQ=MONTHLY;INTERVAL=1',
+    );
 
-    final yearly = repository.createEmpty(DateTime(2026, 6, 2, 12, 0));
-    yearly
-      ..title = 'Yearly'
-      ..rrule = 'FREQ=YEARLY;INTERVAL=1';
+    final yearlyBase = repository.createEmpty(DateTime(2026, 6, 2, 12, 0));
+    final yearly = yearlyBase.copyWith(
+      title: 'Yearly',
+      rrule: 'FREQ=YEARLY;INTERVAL=1',
+    );
 
     await repository.importEvents([monthly, yearly]);
 
@@ -110,12 +113,13 @@ void main() {
   });
 
   test('range includes multi-day non-rrule events', () async {
-    final event = repository.createEmpty(DateTime(2026, 1, 10, 9, 0));
-    event
-      ..title = 'Conference'
-      ..start = DateTime(2026, 1, 10, 9, 0)
-      ..end = DateTime(2026, 1, 12, 18, 0)
-      ..rrule = null;
+    final baseEvent = repository.createEmpty(DateTime(2026, 1, 10, 9, 0));
+    final event = baseEvent.copyWith(
+      title: 'Conference',
+      start: DateTime(2026, 1, 10, 9, 0),
+      end: DateTime(2026, 1, 12, 18, 0),
+      rrule: null,
+    );
 
     await repository.addEvent(event);
 

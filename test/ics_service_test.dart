@@ -5,7 +5,7 @@ import 'package:tcamp_calender/services/ics_service.dart';
 
 void main() {
   test('export and import ICS round-trip', () {
-    final service = IcsService();
+    const service = IcsService();
     final event = CalendarEvent(
       id: 'event-1',
       title: 'Demo',
@@ -33,7 +33,7 @@ void main() {
   });
 
   test('all-day ICS parsing', () {
-    final service = IcsService();
+    const service = IcsService();
     const content = 'BEGIN:VCALENDAR\n'
         'VERSION:2.0\n'
         'BEGIN:VEVENT\n'
@@ -55,7 +55,7 @@ void main() {
   });
 
   test('ICS escapes and unescapes text', () {
-    final service = IcsService();
+    const service = IcsService();
     final event = CalendarEvent(
       id: 'event-escape',
       title: 'Title,With;Punct\nLine',
@@ -79,7 +79,7 @@ void main() {
   });
 
   test('ICS line unfolding supports folded lines', () {
-    final service = IcsService();
+    const service = IcsService();
     const content = 'BEGIN:VCALENDAR\n'
         'VERSION:2.0\n'
         'BEGIN:VEVENT\n'

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:tcamp_calender/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+import '../l10n/app_localizations.dart';
 import '../services/event_repository.dart';
 import '../services/lunar_service.dart';
 import '../widgets/event_list_tile.dart';
@@ -132,7 +132,7 @@ class _DayViewState extends State<DayView> {
             child: FilledButton.icon(
               onPressed: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(
+                  MaterialPageRoute<void>(
                     builder: (_) => EventFormScreen(initialDate: _selectedDay),
                   ),
                 );
@@ -148,9 +148,9 @@ class _DayViewState extends State<DayView> {
 }
 
 class DayPage extends StatelessWidget {
-  final DateTime day;
-
   const DayPage({super.key, required this.day});
+
+  final DateTime day;
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +169,7 @@ class DayPage extends StatelessWidget {
           event: event,
           onTap: () {
             Navigator.of(context).push(
-              MaterialPageRoute(
+              MaterialPageRoute<void>(
                 builder: (_) => EventDetailScreen(event: event),
               ),
             );

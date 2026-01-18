@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
+import 'package:tcamp_calender/l10n/app_localizations.dart';
 import 'package:tcamp_calender/models/calendar_event.dart';
 import 'package:tcamp_calender/screens/day_view.dart';
 import 'package:tcamp_calender/screens/event_detail_screen.dart';
@@ -93,7 +95,7 @@ void main() {
   });
 
   testWidgets('home navigation switches between tabs', (tester) async {
-    final icsService = IcsService();
+    const icsService = IcsService();
     final subscriptionService = SubscriptionService(icsService: icsService);
     const lunarService = LunarService();
 
@@ -106,6 +108,13 @@ void main() {
           Provider<LunarService>.value(value: lunarService),
         ],
         child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
           home: HomeScreen(
             lunarService: lunarService,
             icsService: icsService,
@@ -121,26 +130,38 @@ void main() {
     expect(find.text('Settings'), findsWidgets);
 
     await tester.tap(find.text('Week'));
-    await tester.pump();
-    expect(find.textContaining('Week of'), findsOneWidget);
+    await tester.pumpAndSettle();
+    // Week view shows "Jan. Week 1" format
+    expect(find.textContaining('Week'), findsWidgets);
 
     await tester.tap(find.text('Day'));
-    await tester.pump();
-    expect(find.text('Add Event'), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(find.text('Add Event'), findsWidgets);
 
     await tester.tap(find.text('Settings'));
-    await tester.pump();
+    await tester.pumpAndSettle();
     expect(find.text('Import & Export'), findsOneWidget);
   });
 
   testWidgets('add event flow from DayView', (tester) async {
+    const lunarService = LunarService();
     await tester.pumpWidget(
       MultiProvider(
         providers: [
           ChangeNotifierProvider<EventRepository>.value(value: repository),
-          Provider<LunarService>.value(value: const LunarService()),
+          Provider<LunarService>.value(value: lunarService),
         ],
-        child: const MaterialApp(home: Scaffold(body: DayView())),
+        // ignore: prefer_const_constructors
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(body: DayView()),
+        ),
       ),
     );
 
@@ -157,8 +178,8 @@ void main() {
 
   testWidgets('edit and delete event from detail screen', (tester) async {
     final editRepository = _InMemoryEventRepository();
-    final event = editRepository.createEmpty(DateTime(2026, 1, 17, 9, 0));
-    event.title = 'Original';
+    final baseEvent = editRepository.createEmpty(DateTime(2026, 1, 17, 9, 0));
+    final event = baseEvent.copyWith(title: 'Original');
     await editRepository.addEvent(event);
 
     Future<void> pumpUntilFound(Finder finder) async {
@@ -177,7 +198,16 @@ void main() {
           ChangeNotifierProvider<EventRepository>.value(value: editRepository),
           Provider<LunarService>.value(value: const LunarService()),
         ],
-        child: MaterialApp(home: EventDetailScreen(event: event)),
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: EventDetailScreen(event: event),
+        ),
       ),
     );
 

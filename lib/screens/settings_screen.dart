@@ -2,13 +2,12 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:tcamp_calender/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
-import '../services/settings_service.dart';
-
+import '../l10n/app_localizations.dart';
 import '../services/event_repository.dart';
 import '../services/ics_service.dart';
+import '../services/settings_service.dart';
 import '../services/subscription_service.dart';
 
 class SettingsScreen extends StatefulWidget {
