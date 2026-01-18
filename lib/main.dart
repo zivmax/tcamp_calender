@@ -13,6 +13,7 @@ import 'services/notification_service.dart';
 import 'services/settings_service.dart';
 import 'services/subscription_service.dart';
 import 'theme/app_theme.dart';
+import 'widgets/time_zone_watcher.dart';
 
 /// Application entry point.
 ///
@@ -39,7 +40,7 @@ Future<void> main() async {
         Provider.value(value: services.lunarService),
         ChangeNotifierProvider.value(value: services.settingsService),
       ],
-      child: const TCampCalendarApp(),
+      child: const TimeZoneWatcher(child: TCampCalendarApp()),
     ),
   );
 }

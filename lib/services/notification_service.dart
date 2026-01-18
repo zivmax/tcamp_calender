@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -20,19 +21,36 @@ class NotificationService {
   static const _channelId = 'calendar_reminders';
   static const _windowsAppId = 'com.tcamp.calendar';
   static const _windowsGuid = '2f4c8c0e-8bd6-4f6b-9f4a-9f0f54c2c501';
+  static const _timeZoneStorageKey = 'last_timezone_id';
 
   /// Initializes the notification service.
   ///
   /// Must be called before scheduling any notifications.
   Future<void> init() async {
     tz.initializeTimeZones();
-    await _configureLocalTimeZone();
+    final timeZoneId = await _configureLocalTimeZone();
+    await _storeLastTimeZoneId(timeZoneId);
 
     final loc = _getLocalizations();
     final settings = _buildInitSettings(loc);
 
     await _plugin.initialize(settings);
     await _requestPermissions();
+  }
+
+  /// Refreshes the local timezone if the device timezone changed.
+  ///
+  /// Returns true when a change was detected and applied.
+  Future<bool> refreshLocalTimeZoneIfChanged() async {
+    final currentId = await _getSystemTimeZoneId();
+    if (currentId == null || currentId.isEmpty) return false;
+
+    final lastId = await _getLastTimeZoneId();
+    if (currentId == lastId) return false;
+
+    final configuredId = await _configureLocalTimeZone();
+    await _storeLastTimeZoneId(configuredId ?? currentId);
+    return true;
   }
 
   /// Schedules a reminder notification for an event.
@@ -122,12 +140,13 @@ class NotificationService {
     // Linux and Windows do not require runtime notification permissions.
   }
 
-  Future<void> _configureLocalTimeZone() async {
+  Future<String?> _configureLocalTimeZone() async {
     try {
       // Use flutter_timezone to get the correct timezone name on all platforms
       final timezoneInfo = await FlutterTimezone.getLocalTimezone();
       final timeZoneName = timezoneInfo.identifier;
       tz.setLocalLocation(tz.getLocation(timeZoneName));
+      return timeZoneName;
     } catch (_) {
       // If timezone lookup fails, try to approximate from the local offset
       try {
@@ -139,13 +158,35 @@ class NotificationService {
           final tzNow = tz.TZDateTime.now(location);
           if (tzNow.timeZoneOffset == offset) {
             tz.setLocalLocation(location);
-            return;
+            return location.name;
           }
         }
       } catch (_) {
         // Last resort: use UTC (notifications may be off by timezone offset)
       }
     }
+
+    return null;
+  }
+
+  Future<String?> _getSystemTimeZoneId() async {
+    try {
+      final timezoneInfo = await FlutterTimezone.getLocalTimezone();
+      return timezoneInfo.identifier;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<String?> _getLastTimeZoneId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_timeZoneStorageKey);
+  }
+
+  Future<void> _storeLastTimeZoneId(String? timeZoneId) async {
+    if (timeZoneId == null || timeZoneId.isEmpty) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_timeZoneStorageKey, timeZoneId);
   }
 
   /// Generates a stable notification ID from an event ID.

@@ -73,6 +73,17 @@ class EventRepository extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Reschedules all event reminders, used after timezone changes.
+  Future<void> rescheduleAllReminders() async {
+    final box = _box;
+    if (box == null) return;
+
+    for (final event in box.values) {
+      await _notificationService.cancelEventReminder(event.id);
+      await _notificationService.scheduleEventReminder(event);
+    }
+  }
+
   /// Deletes an event from the repository.
   Future<void> deleteEvent(CalendarEvent event) async {
     await _box?.delete(event.id);
