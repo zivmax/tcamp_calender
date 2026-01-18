@@ -1,6 +1,6 @@
 {
-    "name": "tcamp_calender",
-    "short_name": "tcamp_calender",
+    "name": "TCamp Calendar",
+    "short_name": "TCamp",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
