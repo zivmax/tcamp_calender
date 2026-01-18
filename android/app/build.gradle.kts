@@ -13,6 +13,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+        // Enable core library desugaring for libraries that use Java 8+ APIs (eg flutter_local_notifications)
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -36,6 +38,11 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
         }
+    }
+
+    dependencies {
+        // Required for core library desugaring (enables use of java.time and other APIs on older Android)
+        coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     }
 }
 

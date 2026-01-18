@@ -34,6 +34,23 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  provider: ^6.1.5
+  table_calendar: ^3.1.2
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.1.5
+  uuid: ^4.5.1
+  flutter_local_notifications: ^19.4.1
+  timezone: ^0.10.1
+  http: ^1.5.0
+  file_picker: ^10.3.3
+  shared_preferences: ^2.5.3
+  intl: ^0.20.2
+  lunar: ^1.7.8
+  flutter_localizations:
+    sdk: flutter
+  google_fonts: ^5.0.0
+
 
 dev_dependencies:
   flutter_test:
@@ -51,6 +68,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -87,3 +105,10 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+  # Bundled CJK font for consistent Chinese rendering (place font files under assets/fonts/)
+  fonts:
+    - family: 'Noto Sans SC'
+      fonts:
+        - asset: assets/fonts/NotoSansSC-VariableFont_wght.ttf
+

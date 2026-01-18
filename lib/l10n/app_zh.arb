@@ -1,0 +1,236 @@
+{
+  "@@locale": "zh",
+  "appTitle": "TCamp 日历",
+  "@appTitle": {
+    "description": "应用标题，显示在应用栏和窗口标题中。"
+  },
+  "monthLabel": "月",
+  "@monthLabel": {
+    "description": "月视图标签。"
+  },
+  "weekLabel": "周",
+  "@weekLabel": {
+    "description": "周视图标签。"
+  },
+  "dayLabel": "日",
+  "@dayLabel": {
+    "description": "日视图标签。"
+  },
+  "settingsLabel": "设置",
+  "@settingsLabel": {
+    "description": "设置页面标签。"
+  },
+  "noEvents": "无事件",
+  "@noEvents": {
+    "description": "当所选日期或范围没有事件时显示。"
+  },
+  "addEvent": "新增事件",
+  "@addEvent": {
+    "description": "添加新事件的按钮文本。"
+  },
+  "addEventLower": "新增事件",
+  "@addEventLower": {
+    "description": "添加事件动作的小写变体。"
+  },
+  "editEvent": "编辑事件",
+  "@editEvent": {
+    "description": "编辑现有事件的按钮文本。"
+  },
+  "allDay": "整日",
+  "@allDay": {
+    "description": "表示事件为整日的标签。"
+  },
+  "start": "开始",
+  "@start": {
+    "description": "事件开始时间的标签。"
+  },
+  "end": "结束",
+  "@end": {
+    "description": "事件结束时间的标签。"
+  },
+  "none": "无",
+  "@none": {
+    "description": "表示无值或未选择。"
+  },
+  "reminder5min": "提前5分钟",
+  "@reminder5min": {
+    "description": "提醒选项：提前5分钟。"
+  },
+  "reminder10min": "提前10分钟",
+  "@reminder10min": {
+    "description": "提醒选项：提前10分钟。"
+  },
+  "reminder30min": "提前30分钟",
+  "@reminder30min": {
+    "description": "提醒选项：提前30分钟。"
+  },
+  "reminder1hour": "提前1小时",
+  "@reminder1hour": {
+    "description": "提醒选项：提前1小时。"
+  },
+  "repeat": "重复",
+  "@repeat": {
+    "description": "重复/循环设置的标签。"
+  },
+  "daily": "每天",
+  "@daily": {
+    "description": "重复选项：每天。"
+  },
+  "weekly": "每周",
+  "@weekly": {
+    "description": "重复选项：每周。"
+  },
+  "monthly": "每月",
+  "@monthly": {
+    "description": "重复选项：每月。"
+  },
+  "yearly": "每年",
+  "@yearly": {
+    "description": "重复选项：每年。"
+  },
+  "customRrule": "自定义 (RRULE)",
+  "@customRrule": {
+    "description": "用于输入自定义 RRULE 规则的标签。"
+  },
+  "save": "保存",
+  "@save": {
+    "description": "保存更改的按钮文本。"
+  },
+  "title": "标题",
+  "@title": {
+    "description": "事件标题输入框的标签。"
+  },
+  "titleRequired": "标题为必填项",
+  "@titleRequired": {
+    "description": "缺少标题时显示的验证消息。"
+  },
+  "description": "描述",
+  "@description": {
+    "description": "事件描述输入框的标签。"
+  },
+  "location": "地点",
+  "@location": {
+    "description": "事件地点输入框的标签。"
+  },
+  "rrule": "RRULE",
+  "@rrule": {
+    "description": "循环规则 (RRULE) 输入标签。"
+  },
+  "rruleHint": "FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,WE,FR",
+  "@rruleHint": {
+    "description": "用于帮助用户编写 RRULE 的示例提示。"
+  },
+  "untitled": "(未命名)",
+  "@untitled": {
+    "description": "当事件没有标题时使用的占位标题。"
+  },
+  "reminderText": "提醒：提前{minutes}分钟",
+  "@reminderText": {
+    "description": "显示提醒提前多少分钟。",
+    "placeholders": {
+      "minutes": { "example": "10" }
+    }
+  },
+  "reminderLabel": "提醒",
+  "@reminderLabel": {
+    "description": "提醒设置的标签。"
+  },
+  "rruleText": "RRULE：{rrule}",
+  "@rruleText": {
+    "description": "显示 RRULE 循环字符串。",
+    "placeholders": {
+      "rrule": { "example": "FREQ=WEEKLY;INTERVAL=1" }
+    }
+  },
+  "eventDetails": "事件详情",
+  "@eventDetails": {
+    "description": "事件详情页面的标题。"
+  },
+  "seriesEditsNote": "编辑将应用于整个系列。",
+  "@seriesEditsNote": {
+    "description": "说明更改将影响系列中所有发生项。"
+  },
+  "weekOf": "{date} 那一周",
+  "@weekOf": {
+    "description": "显示周起始日期的标签。",
+    "placeholders": {
+      "date": { "example": "2026-01-18" }
+    }
+  },
+  "importExport": "导入与导出",
+  "@importExport": {
+    "description": "导入与导出日历的菜单标签。"
+  },
+  "importIcs": "导入 ICS",
+  "@importIcs": {
+    "description": "导入 ICS 日历文件的操作。"
+  },
+  "exportIcs": "导出 ICS",
+  "@exportIcs": {
+    "description": "将日历导出为 ICS 的操作。"
+  },
+  "networkSubscriptions": "网络订阅",
+  "@networkSubscriptions": {
+    "description": "来自网络源的日历订阅标签。"
+  },
+  "subscribeUrl": "订阅 URL",
+  "@subscribeUrl": {
+    "description": "订阅 URL 输入框的标签。"
+  },
+  "subscribeUrlHint": "https://example.com/calendar.ics",
+  "@subscribeUrlHint": {
+    "description": "作为订阅输入提示显示的示例 URL。"
+  },
+  "addSubscription": "添加订阅",
+  "@addSubscription": {
+    "description": "添加网络订阅的按钮文本。"
+  },
+  "noSubscriptions": "未添加订阅。",
+  "@noSubscriptions": {
+    "description": "当未添加任何订阅时显示。"
+  },
+  "refreshSubscriptions": "刷新订阅",
+  "@refreshSubscriptions": {
+    "description": "刷新订阅并获取更新的操作。"
+  },
+  "saveCalendarAs": "另存为日历",
+  "@saveCalendarAs": {
+    "description": "以不同名称保存日历数据的操作。"
+  },
+  "notificationAppName": "TCamp 日历",
+  "@notificationAppName": {
+    "description": "用于通知中的应用名称。"
+  },
+  "notificationChannelName": "日历提醒",
+  "@notificationChannelName": {
+    "description": "用于提醒的通知通道名称。"
+  },
+  "notificationChannelDescription": "事件提醒",
+  "@notificationChannelDescription": {
+    "description": "提醒通知通道的描述。"
+  },
+  "notificationTime": "提醒时间",
+  "@notificationTime": {
+    "description": "整日事件通知时间的标签。"
+  },
+  "linuxActionOpen": "打开",
+  "@linuxActionOpen": {
+    "description": "Linux 桌面通知中使用的操作标签。"
+  },
+  "languageLabel": "语言",
+  "@languageLabel": {
+    "description": "语言设置的标签。"
+  },
+  "languageSystemDefault": "系统默认",
+  "@languageSystemDefault": {
+    "description": "使用系统默认语言的选项。"
+  },
+  "languageEnglish": "英语",
+  "@languageEnglish": {
+    "description": "英语语言选项。"
+  },
+  "languageChinese": "中文",
+  "@languageChinese": {
+    "description": "中文语言选项。"
+  }
+}

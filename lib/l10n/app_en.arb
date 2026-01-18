@@ -1,0 +1,236 @@
+{
+  "@@locale": "en",
+  "appTitle": "TCamp Calendar",
+  "@appTitle": {
+    "description": "The application title shown in the app bar and window title."
+  },
+  "monthLabel": "Month",
+  "@monthLabel": {
+    "description": "Label for the month view tab."
+  },
+  "weekLabel": "Week",
+  "@weekLabel": {
+    "description": "Label for the week view tab."
+  },
+  "dayLabel": "Day",
+  "@dayLabel": {
+    "description": "Label for the day view tab."
+  },
+  "settingsLabel": "Settings",
+  "@settingsLabel": {
+    "description": "Label for the settings page in the app."
+  },
+  "noEvents": "No events",
+  "@noEvents": {
+    "description": "Displayed when there are no events for the selected date or range."
+  },
+  "addEvent": "Add Event",
+  "@addEvent": {
+    "description": "Button text for adding a new event."
+  },
+  "addEventLower": "Add event",
+  "@addEventLower": {
+    "description": "Lowercase variant of the add event action."
+  },
+  "editEvent": "Edit Event",
+  "@editEvent": {
+    "description": "Button text for editing an existing event."
+  },
+  "allDay": "All day",
+  "@allDay": {
+    "description": "Label indicating the event lasts the whole day."
+  },
+  "start": "Start",
+  "@start": {
+    "description": "Label for the event start time."
+  },
+  "end": "End",
+  "@end": {
+    "description": "Label for the event end time."
+  },
+  "none": "None",
+  "@none": {
+    "description": "Represents no value or selection."
+  },
+  "reminder5min": "5 minutes before",
+  "@reminder5min": {
+    "description": "Reminder option: 5 minutes before the event."
+  },
+  "reminder10min": "10 minutes before",
+  "@reminder10min": {
+    "description": "Reminder option: 10 minutes before the event."
+  },
+  "reminder30min": "30 minutes before",
+  "@reminder30min": {
+    "description": "Reminder option: 30 minutes before the event."
+  },
+  "reminder1hour": "1 hour before",
+  "@reminder1hour": {
+    "description": "Reminder option: 1 hour before the event."
+  },
+  "repeat": "Repeat",
+  "@repeat": {
+    "description": "Label for recurrence/ repeat settings."
+  },
+  "daily": "Daily",
+  "@daily": {
+    "description": "Recurrence option: daily."
+  },
+  "weekly": "Weekly",
+  "@weekly": {
+    "description": "Recurrence option: weekly."
+  },
+  "monthly": "Monthly",
+  "@monthly": {
+    "description": "Recurrence option: monthly."
+  },
+  "yearly": "Yearly",
+  "@yearly": {
+    "description": "Recurrence option: yearly."
+  },
+  "customRrule": "Custom (RRULE)",
+  "@customRrule": {
+    "description": "Label for entering a custom RRULE recurrence string."
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Button text to save changes."
+  },
+  "title": "Title",
+  "@title": {
+    "description": "Label for the event title input."
+  },
+  "titleRequired": "Title is required",
+  "@titleRequired": {
+    "description": "Validation message when title is missing."
+  },
+  "description": "Description",
+  "@description": {
+    "description": "Label for the event description input."
+  },
+  "location": "Location",
+  "@location": {
+    "description": "Label for the event location input."
+  },
+  "rrule": "RRULE",
+  "@rrule": {
+    "description": "Label for recurrence rule (RRULE) input."
+  },
+  "rruleHint": "FREQ=WEEKLY;INTERVAL=1;BYDAY=MO,WE,FR",
+  "@rruleHint": {
+    "description": "Example RRULE hint to help the user compose a recurrence string."
+  },
+  "untitled": "(Untitled)",
+  "@untitled": {
+    "description": "Placeholder title used when an event has no title."
+  },
+  "reminderText": "Reminder: {minutes} minutes before",
+  "@reminderText": {
+    "description": "Shows how many minutes before the event the reminder is set.",
+    "placeholders": {
+      "minutes": { "example": "10" }
+    }
+  },
+  "reminderLabel": "Reminder",
+  "@reminderLabel": {
+    "description": "Label for reminder setting."
+  },
+  "rruleText": "RRULE: {rrule}",
+  "@rruleText": {
+    "description": "Displays an RRULE recurrence string.",
+    "placeholders": {
+      "rrule": { "example": "FREQ=WEEKLY;INTERVAL=1" }
+    }
+  },
+  "eventDetails": "Event Details",
+  "@eventDetails": {
+    "description": "Title for the event details screen."
+  },
+  "seriesEditsNote": "Edits apply to the entire series.",
+  "@seriesEditsNote": {
+    "description": "Note explaining that changes affect all occurrences in a series."
+  },
+  "weekOf": "Week of {date}",
+  "@weekOf": {
+    "description": "Label showing the week start date.",
+    "placeholders": {
+      "date": { "example": "2026-01-18" }
+    }
+  },
+  "importExport": "Import & Export",
+  "@importExport": {
+    "description": "Menu label for importing and exporting calendars."
+  },
+  "importIcs": "Import ICS",
+  "@importIcs": {
+    "description": "Action to import an ICS calendar file."
+  },
+  "exportIcs": "Export ICS",
+  "@exportIcs": {
+    "description": "Action to export calendar data as ICS."
+  },
+  "networkSubscriptions": "Network Subscriptions",
+  "@networkSubscriptions": {
+    "description": "Label for calendar subscriptions from network sources."
+  },
+  "subscribeUrl": "Subscribe URL",
+  "@subscribeUrl": {
+    "description": "Label for the subscription URL input."
+  },
+  "subscribeUrlHint": "https://example.com/calendar.ics",
+  "@subscribeUrlHint": {
+    "description": "Example URL shown as a hint for subscription input."
+  },
+  "addSubscription": "Add subscription",
+  "@addSubscription": {
+    "description": "Button text to add a network subscription."
+  },
+  "noSubscriptions": "No subscriptions added.",
+  "@noSubscriptions": {
+    "description": "Shown when no subscriptions have been added."
+  },
+  "refreshSubscriptions": "Refresh subscriptions",
+  "@refreshSubscriptions": {
+    "description": "Action to refresh subscriptions and fetch updates."
+  },
+  "saveCalendarAs": "Save calendar as",
+  "@saveCalendarAs": {
+    "description": "Action to save calendar data under a different name."
+  },
+  "notificationAppName": "TCamp Calendar",
+  "@notificationAppName": {
+    "description": "App name used in notifications."
+  },
+  "notificationChannelName": "Calendar Reminders",
+  "@notificationChannelName": {
+    "description": "Name for the notification channel used for reminders."
+  },
+  "notificationChannelDescription": "Event reminders",
+  "@notificationChannelDescription": {
+    "description": "Description of the notification channel for reminders."
+  },
+  "notificationTime": "Notification time",
+  "@notificationTime": {
+    "description": "Label for selecting the notification time for all-day events."
+  },
+  "linuxActionOpen": "Open",
+  "@linuxActionOpen": {
+    "description": "Action label used in Linux desktop notifications."
+  },
+  "languageLabel": "Language",
+  "@languageLabel": {
+    "description": "Label for the language setting."
+  },
+  "languageSystemDefault": "System default",
+  "@languageSystemDefault": {
+    "description": "Option to use the system's default language."
+  },
+  "languageEnglish": "English",
+  "@languageEnglish": {
+    "description": "Language option for English."
+  },
+  "languageChinese": "Chinese",
+  "@languageChinese": {
+    "description": "Language option for Chinese."
+  }
+}

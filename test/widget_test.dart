@@ -5,26 +5,74 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 
-import 'package:tcamp_calender/main.dart';
+import 'package:tcamp_calender/models/calendar_event.dart';
+import 'package:tcamp_calender/screens/home_screen.dart';
+import 'package:tcamp_calender/services/event_repository.dart';
+import 'package:tcamp_calender/services/ics_service.dart';
+import 'package:tcamp_calender/services/lunar_service.dart';
+import 'package:tcamp_calender/services/notification_service.dart';
+import 'package:tcamp_calender/services/subscription_service.dart';
+
+class _FakeNotificationService extends NotificationService {
+  @override
+  Future<void> init() async {}
+
+  @override
+  Future<void> scheduleEventReminder(CalendarEvent event) async {}
+
+  @override
+  Future<void> cancelEventReminder(String eventId) async {}
+}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  late Directory tempDir;
+  late EventRepository repository;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  setUpAll(() async {
+    tempDir = await Directory.systemTemp.createTemp('calendar_widget_test');
+    Hive.init(tempDir.path);
+    repository = EventRepository(notificationService: _FakeNotificationService());
+    await repository.init();
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  tearDownAll(() async {
+    await Hive.close();
+    await tempDir.delete(recursive: true);
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  testWidgets('Home screen navigation renders views', (WidgetTester tester) async {
+    final icsService = IcsService();
+    final subscriptionService = SubscriptionService(icsService: icsService);
+    const lunarService = LunarService();
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<EventRepository>.value(value: repository),
+          Provider<IcsService>.value(value: icsService),
+          Provider<SubscriptionService>.value(value: subscriptionService),
+          Provider<LunarService>.value(value: lunarService),
+        ],
+        child: MaterialApp(
+          home: HomeScreen(
+            lunarService: lunarService,
+            icsService: icsService,
+            subscriptionService: subscriptionService,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Month'), findsWidgets);
+    expect(find.text('Week'), findsWidgets);
+    expect(find.text('Day'), findsWidgets);
+    expect(find.text('Settings'), findsWidgets);
   });
 }
