@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -25,6 +26,7 @@ class NotificationService {
   /// Must be called before scheduling any notifications.
   Future<void> init() async {
     tz.initializeTimeZones();
+    await _configureLocalTimeZone();
 
     final loc = _getLocalizations();
     final settings = _buildInitSettings(loc);
@@ -49,11 +51,22 @@ class NotificationService {
     final notificationId = _getNotificationId(event.id);
     final loc = _getLocalizations();
 
+    // Convert local DateTime to TZDateTime in the configured local timezone
+    final tzScheduled = tz.TZDateTime(
+      tz.local,
+      scheduled.year,
+      scheduled.month,
+      scheduled.day,
+      scheduled.hour,
+      scheduled.minute,
+      scheduled.second,
+    );
+
     await _plugin.zonedSchedule(
       notificationId,
       event.title,
       event.description.isEmpty ? event.location : event.description,
-      tz.TZDateTime.from(scheduled, tz.local),
+      tzScheduled,
       _buildNotificationDetails(loc),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
@@ -105,7 +118,34 @@ class NotificationService {
     final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
         AndroidFlutterLocalNotificationsPlugin>();
     await androidPlugin?.requestNotificationsPermission();
+    await androidPlugin?.requestExactAlarmsPermission();
     // Linux and Windows do not require runtime notification permissions.
+  }
+
+  Future<void> _configureLocalTimeZone() async {
+    try {
+      // Use flutter_timezone to get the correct timezone name on all platforms
+      final timezoneInfo = await FlutterTimezone.getLocalTimezone();
+      final timeZoneName = timezoneInfo.identifier;
+      tz.setLocalLocation(tz.getLocation(timeZoneName));
+    } catch (_) {
+      // If timezone lookup fails, try to approximate from the local offset
+      try {
+        final now = DateTime.now();
+        final offset = now.timeZoneOffset;
+        final locations = tz.timeZoneDatabase.locations;
+        for (final entry in locations.entries) {
+          final location = entry.value;
+          final tzNow = tz.TZDateTime.now(location);
+          if (tzNow.timeZoneOffset == offset) {
+            tz.setLocalLocation(location);
+            return;
+          }
+        }
+      } catch (_) {
+        // Last resort: use UTC (notifications may be off by timezone offset)
+      }
+    }
   }
 
   /// Generates a stable notification ID from an event ID.

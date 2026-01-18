@@ -1,0 +1,9 @@
+# Copy this file to android/key.properties and fill values (do NOT commit).
+# WARNING: store passwords and keys are secrets. Keep this file private.
+
+storePassword=123456789
+keyPassword=123456789
+keyAlias=release_key
+# Use absolute path on Windows (escape backslashes) or relative path to project root
+# Example: C:\\Users\\USER\\keystore\\release_key.jks
+storeFile=C:\\path\\to\\your\\release_key.jks
