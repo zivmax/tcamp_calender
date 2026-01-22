@@ -234,6 +234,8 @@ jobs:
       - name: Create Release and upload assets
         uses: softprops/action-gh-release@v1
         with:
+          # Use the pushed tag (when this was triggered by a tag push), otherwise default to 'autobuild'
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'autobuild' }}
           files: |
             artifacts/android/*
             artifacts/macos/*
