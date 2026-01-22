@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications_platform_interface/flutter_local_notifications_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -80,6 +82,20 @@ void main() {
       () async {
     debugDefaultTargetPlatformOverride = TargetPlatform.fuchsia;
     addTearDown(() => debugDefaultTargetPlatformOverride = null);
+
+    final service = NotificationService(
+      timeZoneProvider: () async => TimezoneInfo(identifier: 'UTC'),
+    );
+
+    await service.init();
+  });
+
+  test('init does not crash with unsupported locale', () async {
+    final originalLocales = TestWidgetsFlutterBinding.instance.platformDispatcher.locales;
+    TestWidgetsFlutterBinding.instance.platformDispatcher.localesTestValue = const [Locale('C')];
+    addTearDown(() {
+      TestWidgetsFlutterBinding.instance.platformDispatcher.localesTestValue = originalLocales;
+    });
 
     final service = NotificationService(
       timeZoneProvider: () async => TimezoneInfo(identifier: 'UTC'),

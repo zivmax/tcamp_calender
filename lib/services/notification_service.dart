@@ -105,7 +105,10 @@ class NotificationService {
 
   AppLocalizations _getLocalizations() {
     final locale = PlatformDispatcher.instance.locale;
-    return lookupAppLocalizations(locale);
+    if (AppLocalizations.delegate.isSupported(locale)) {
+      return lookupAppLocalizations(locale);
+    }
+    return lookupAppLocalizations(const Locale('en'));
   }
 
   InitializationSettings _buildInitSettings(AppLocalizations loc) {
