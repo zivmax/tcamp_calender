@@ -228,6 +228,11 @@ jobs:
       - name: Package Linux arm64
         run: tar -czf artifacts/linux-arm64-release.tar.gz -C artifacts/linux-arm64 .
 
+      - name: Package Web
+        run: |
+          cd artifacts/web
+          zip -r ../web-release.zip .
+
       - name: List downloaded artifacts
         run: ls -R artifacts || true
 
@@ -237,12 +242,13 @@ jobs:
           # Use the pushed tag (when this was triggered by a tag push), otherwise default to 'autobuild'
           tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'autobuild' }}
           files: |
-            artifacts/android/*
-            artifacts/macos/*
+            artifacts/android/**/*.apk
+            artifacts/android/**/*.aab
+            artifacts/macos/**/*
             artifacts/windows-x64-release.zip
             artifacts/linux-x64-release.tar.gz
             artifacts/linux-arm64-release.tar.gz
-            artifacts/web/**
+            artifacts/web-release.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
