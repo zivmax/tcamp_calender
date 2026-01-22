@@ -1,0 +1,289 @@
+name: "CD — Build, Release & Deploy"
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*', 'release-*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_CHANNEL: stable
+
+jobs:
+  android:
+    name: "Android (all ABIs + AAB) ✅"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Accept Android licenses
+        run: yes | flutter doctor --android-licenses || true
+
+      - name: Build APKs (split per ABI)
+        run: flutter build apk --split-per-abi --release
+
+      - name: Build AAB
+        run: flutter build appbundle --release
+
+      - name: Upload APKs and AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release
+          path: |
+            build/app/outputs/flutter-apk/*.apk
+            build/app/outputs/bundle/release/*.aab
+
+  web:
+    name: "Web (release) 🌐"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+
+      - name: Cache pub dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
+
+      - run: flutter pub get
+      - run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-release
+          path: build/web
+
+  macos:
+    name: "macOS (universal: x64 + arm64) 🍎"
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+
+      - run: flutter pub get
+      - run: flutter build macos --release
+
+      - name: Package macOS app
+        run: |
+          mkdir -p release
+          APP_DIR=$(ls -d build/macos/Build/Products/Release/*.app | head -n1)
+          echo "Packaging $APP_DIR"
+          ditto -c -k --sequesterRsrc --keepParent "$APP_DIR" "release/macos-universal.zip"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos-universal
+          path: release/macos-universal.zip
+
+  windows:
+    name: "Windows (x64) 🪟"
+    timeout-minutes: 30
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+
+      - run: flutter pub get
+      - run: flutter build windows --release
+
+      - name: Package Windows
+        run: |
+          Compress-Archive -Path "build\\windows\\x64\\runner\\Release\\*" -DestinationPath "windows-x64-release.zip"
+        shell: pwsh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64
+          path: windows-x64-release.zip
+
+  linux:
+    name: "Linux (x64) 🐧"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev
+
+      - run: flutter pub get
+      - run: flutter build linux --release
+
+      - name: Package Linux x64
+        run: |
+          mkdir -p release
+          cp -r build/linux/x64/release/bundle/* release/ || true
+          tar -czf linux-x64-release.tar.gz -C release .
+          mv linux-x64-release.tar.gz release/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-x64
+          path: release/linux-x64-release.tar.gz
+
+  linux-arm64:
+    name: "Linux (arm64) 🐧 (via Docker emulation)"
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup QEMU (multiarch emulation)
+        uses: docker/setup-qemu-action@v2
+
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build Linux arm64 using CirrusCI Flutter image
+        run: |
+          docker run --rm --platform linux/arm64 -v "${{ github.workspace }}:/workspace" -w /workspace ghcr.io/cirruslabs/flutter:stable bash -lc "sudo apt-get update && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev llvm lld && flutter pub get && flutter build linux --release"
+
+      - name: Package Linux arm64
+        run: |
+          mkdir -p release
+          cp -r build/linux/arm64/release/bundle/* release/ || true
+          tar -czf linux-arm64-release.tar.gz -C release .
+          mv linux-arm64-release.tar.gz release/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux-arm64
+          path: release/linux-arm64-release.tar.gz
+
+  create_release:
+    name: "Create GitHub Release & Upload Artifacts 🚀"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [android, macos, windows, linux, linux-arm64, web]
+    if: "startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Android artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: android-release
+          path: artifacts/android
+
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-universal
+          path: artifacts/macos
+
+      - name: Download Windows x64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-x64
+          path: artifacts/windows-x64
+
+      - name: Download Linux x64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-x64
+          path: artifacts/linux-x64
+
+      - name: Download Linux arm64 artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-arm64
+          path: artifacts/linux-arm64
+
+      - name: Download Web artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: web-release
+          path: artifacts/web
+
+      - name: List downloaded artifacts
+        run: ls -R artifacts || true
+
+      - name: Create Release and upload assets
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifacts/android/*
+            artifacts/macos/*
+            artifacts/windows-x64/*
+            artifacts/linux-x64/*
+            artifacts/linux-arm64/*
+            artifacts/web/**
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-pages:
+    name: "Deploy Web to GitHub Pages 🌍"
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: web
+    if: "github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'"
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download Web artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: web-release
+          path: build/web
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+# Notes:
+# - This workflow combines multi-platform builds, creates a GitHub Release (on tag push or manual dispatch) and deploys the web build to GitHub Pages (on push to main or manual dispatch).
+# - The old, separate workflows have been set to `workflow_dispatch` only to avoid duplicate automatic runs.
+# - Adjust channels, runners, or packaging steps to match your desired release artifacts.
