@@ -217,38 +217,36 @@ jobs:
           name: web-release
           path: artifacts/web
 
-      - name: Package Windows x64
+      - name: Package and Prepare Release Assets
         run: |
-          cd artifacts/windows-x64
-          zip -r ../windows-x64-release.zip .
+          mkdir -p release_assets
 
-      - name: Package Linux x64
-        run: tar -czf artifacts/linux-x64-release.tar.gz -C artifacts/linux-x64 .
+          echo "Collecting Android artifacts..."
+          find artifacts/android -type f -name "*.apk" -exec cp {} release_assets/ \;
+          find artifacts/android -type f -name "*.aab" -exec cp {} release_assets/ \;
 
-      - name: Package Linux arm64
-        run: tar -czf artifacts/linux-arm64-release.tar.gz -C artifacts/linux-arm64 .
+          echo "Collecting macOS artifacts..."
+          find artifacts/macos -type f -name "*.zip" -exec cp {} release_assets/ \;
 
-      - name: Package Web
-        run: |
-          cd artifacts/web
-          zip -r ../web-release.zip .
+          echo "Packaging Windows..."
+          (cd artifacts/windows-x64 && zip -r ../../release_assets/windows-x64-release.zip .)
 
-      - name: List downloaded artifacts
-        run: ls -R artifacts || true
+          echo "Packaging Linux..."
+          tar -czf release_assets/linux-x64-release.tar.gz -C artifacts/linux-x64 .
+          tar -czf release_assets/linux-arm64-release.tar.gz -C artifacts/linux-arm64 .
+
+          echo "Packaging Web..."
+          (cd artifacts/web && zip -r ../../release_assets/web-release.zip .)
+
+          echo "Final Release Assets:"
+          ls -l release_assets
 
       - name: Create Release and upload assets
         uses: softprops/action-gh-release@v1
         with:
           # Use the pushed tag (when this was triggered by a tag push), otherwise default to 'autobuild'
           tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'autobuild' }}
-          files: |
-            artifacts/android/**/*.apk
-            artifacts/android/**/*.aab
-            artifacts/macos/**/*
-            artifacts/windows-x64-release.zip
-            artifacts/linux-x64-release.tar.gz
-            artifacts/linux-arm64-release.tar.gz
-            artifacts/web-release.zip
+          files: release_assets/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
