@@ -31,6 +31,28 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Cache Pub + Dart tool
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: ${{ runner.os }}-flutter-${{ env.FLUTTER_CHANNEL }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-${{ env.FLUTTER_CHANNEL }}-
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            android/.gradle
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/**/build.gradle*', 'android/**/settings.gradle*', 'android/**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - name: Flutter pub get
         run: flutter pub get
@@ -63,6 +85,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
 
       - name: Cache pub dependencies
         uses: actions/cache@v4
@@ -70,7 +93,9 @@ jobs:
           path: |
             ~/.pub-cache
             .dart_tool
-          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
+          key: ${{ runner.os }}-flutter-${{ env.FLUTTER_CHANNEL }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-${{ env.FLUTTER_CHANNEL }}-
 
       - run: flutter pub get
       - run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
@@ -90,6 +115,17 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Cache Pub + Dart tool
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: ${{ runner.os }}-flutter-${{ env.FLUTTER_CHANNEL }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-${{ env.FLUTTER_CHANNEL }}-
 
       - run: flutter pub get
       - run: flutter build macos --release
@@ -116,6 +152,28 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Cache Pub + Dart tool
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: ${{ runner.os }}-flutter-${{ env.FLUTTER_CHANNEL }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-${{ env.FLUTTER_CHANNEL }}-
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            android/.gradle
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/**/build.gradle*', 'android/**/settings.gradle*', 'android/**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - run: flutter pub get
       - run: flutter build windows --release
@@ -135,6 +193,17 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+
+      - name: Cache Pub + Dart tool
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: ${{ runner.os }}-flutter-${{ env.FLUTTER_CHANNEL }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-${{ env.FLUTTER_CHANNEL }}-
 
       - name: Install dependencies
         run: |
@@ -162,9 +231,17 @@ jobs:
       - name: Setup Docker buildx
         uses: docker/setup-buildx-action@v2
 
+      - name: Cache Pub (host)
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-flutter-${{ env.FLUTTER_CHANNEL }}-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-${{ env.FLUTTER_CHANNEL }}-
+
       - name: Build Linux arm64 using CirrusCI Flutter image
         run: |
-          docker run --rm --platform linux/arm64 -v "${{ github.workspace }}:/workspace" -w /workspace ghcr.io/cirruslabs/flutter:stable bash -lc "sudo apt-get update && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev llvm lld && flutter pub get && flutter build linux --release"
+          docker run --rm --platform linux/arm64 -v "${{ github.workspace }}:/workspace" -v "$HOME/.pub-cache:/root/.pub-cache" -w /workspace ghcr.io/cirruslabs/flutter:stable bash -lc "sudo apt-get update && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev llvm lld && flutter pub get && flutter build linux --release"
 
       - uses: actions/upload-artifact@v4
         with:
@@ -247,7 +324,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             // Determine tag: prefer pushed tag, fall back to github.ref, then default to 'autobuild'
-            const tag = (github.context.payload && github.context.payload.ref && github.context.payload.ref.startsWith('refs/tags/') ? github.context.payload.ref.replace('refs/tags/', '') : (github.ref && github.ref.startsWith('refs/tags/') ? github.ref.replace('refs/tags/', '') : 'autobuild'));
+            const tag = (context.payload && context.payload.ref && context.payload.ref.startsWith('refs/tags/') ? context.payload.ref.replace('refs/tags/', '') : (context.ref && context.ref.startsWith('refs/tags/') ? context.ref.replace('refs/tags/', '') : 'autobuild'));
 
             core.info(`Target tag for release cleanup: ${tag}`);
 
