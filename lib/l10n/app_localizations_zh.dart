@@ -135,6 +135,24 @@ class AppLocalizationsZh extends AppLocalizations {
   String get exportIcs => '导出 ICS';
 
   @override
+  String get dataManagement => '数据';
+
+  @override
+  String get clearDataAction => '清除数据';
+
+  @override
+  String get clearDataTitle => '清除应用数据';
+
+  @override
+  String get clearDataDescription => '这将删除本设备上的所有事件、订阅和设置。此操作无法撤销。';
+
+  @override
+  String get cancelAction => '取消';
+
+  @override
+  String get dataCleared => '数据已清除。';
+
+  @override
   String get networkSubscriptions => '网络订阅';
 
   @override

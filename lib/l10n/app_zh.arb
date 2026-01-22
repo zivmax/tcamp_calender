@@ -169,6 +169,30 @@
   "@exportIcs": {
     "description": "将日历导出为 ICS 的操作。"
   },
+  "dataManagement": "数据",
+  "@dataManagement": {
+    "description": "数据管理操作的分区标签。"
+  },
+  "clearDataAction": "清除数据",
+  "@clearDataAction": {
+    "description": "清除所有应用数据的按钮文本。"
+  },
+  "clearDataTitle": "清除应用数据",
+  "@clearDataTitle": {
+    "description": "确认删除数据的对话框标题。"
+  },
+  "clearDataDescription": "这将删除本设备上的所有事件、订阅和设置。此操作无法撤销。",
+  "@clearDataDescription": {
+    "description": "警告数据删除的对话框内容。"
+  },
+  "cancelAction": "取消",
+  "@cancelAction": {
+    "description": "取消操作的标签。"
+  },
+  "dataCleared": "数据已清除。",
+  "@dataCleared": {
+    "description": "数据清除后的提示消息。"
+  },
   "networkSubscriptions": "网络订阅",
   "@networkSubscriptions": {
     "description": "来自网络源的日历订阅标签。"

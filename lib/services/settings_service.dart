@@ -39,5 +39,13 @@ class SettingsService extends ChangeNotifier {
     _locale = locale;
     notifyListeners();
   }
+
+  /// Clears persisted settings and resets to system defaults.
+  Future<void> clear() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_localeKey);
+    _locale = null;
+    notifyListeners();
+  }
 }
 

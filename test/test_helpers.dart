@@ -81,6 +81,12 @@ class TestEventRepository extends EventRepository {
   }
 
   @override
+  Future<void> clearAll() async {
+    _events.clear();
+    notifyListeners();
+  }
+
+  @override
   List<CalendarEvent> eventsForDay(DateTime day) {
     final dayOnly = DateTime(day.year, day.month, day.day);
     return _events.where((event) {
@@ -124,6 +130,11 @@ class TestSubscriptionService extends SubscriptionService {
   @override
   Future<List<CalendarEvent>> fetchFromSubscriptions(List<String> urls) async {
     return <CalendarEvent>[];
+  }
+
+  @override
+  Future<void> clear() async {
+    stored = <String>[];
   }
 }
 

@@ -135,6 +135,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportIcs => 'Export ICS';
 
   @override
+  String get dataManagement => 'Data';
+
+  @override
+  String get clearDataAction => 'Clear data';
+
+  @override
+  String get clearDataTitle => 'Clear app data';
+
+  @override
+  String get clearDataDescription =>
+      'This will delete all events, subscriptions, and settings on this device. This action cannot be undone.';
+
+  @override
+  String get cancelAction => 'Cancel';
+
+  @override
+  String get dataCleared => 'Data cleared.';
+
+  @override
   String get networkSubscriptions => 'Network Subscriptions';
 
   @override

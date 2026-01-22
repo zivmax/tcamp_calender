@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../services/event_repository.dart';
 import '../services/ics_service.dart';
+import '../services/notification_service.dart';
 import '../services/settings_service.dart';
 import '../services/subscription_service.dart';
 
@@ -112,6 +113,64 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
+  Future<void> _clearAllData() async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(l10n.clearDataTitle),
+          content: Text(l10n.clearDataDescription),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(l10n.cancelAction),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(l10n.clearDataAction),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm != true) return;
+
+    if (!mounted) return;
+
+    final repo = context.read<EventRepository>();
+    NotificationService? notificationService;
+    SettingsService? settings;
+    try {
+      notificationService = context.read<NotificationService>();
+    } catch (_) {
+      // Notification service may be unavailable in tests.
+    }
+
+    try {
+      settings = context.read<SettingsService>();
+    } catch (_) {
+      // Settings provider may be unavailable in tests.
+    }
+
+    await repo.clearAll();
+    await notificationService?.clearAll();
+    await settings?.clear();
+
+    await widget.subscriptionService.clear();
+
+    if (!mounted) return;
+    setState(() {
+      _subscriptions = [];
+      _subscriptionController.clear();
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(l10n.dataCleared)),
+    );
+  }
+
   void _addSubscription() {
     final url = _subscriptionController.text.trim();
     if (url.isEmpty) return;
@@ -181,6 +240,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
           onPressed: _exportIcs,
           icon: const Icon(Icons.save),
           label: Text(AppLocalizations.of(context)!.exportIcs),
+        ),
+        const Divider(height: 32),
+        Text(AppLocalizations.of(context)!.dataManagement,
+            style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 8),
+        FilledButton.icon(
+          onPressed: _clearAllData,
+          icon: const Icon(Icons.delete_forever),
+          label: Text(AppLocalizations.of(context)!.clearDataAction),
         ),
         const Divider(height: 32),
         Text(AppLocalizations.of(context)!.networkSubscriptions, style: Theme.of(context).textTheme.titleMedium),

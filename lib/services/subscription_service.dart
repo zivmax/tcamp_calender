@@ -36,6 +36,12 @@ class SubscriptionService {
     await prefs.setStringList(_storageKey, urls);
   }
 
+  /// Clears all saved subscription URLs.
+  Future<void> clear() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_storageKey);
+  }
+
   /// Fetches and parses events from all subscription URLs.
   ///
   /// Silently skips URLs that fail to load.

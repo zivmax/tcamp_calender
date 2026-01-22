@@ -99,6 +99,13 @@ class NotificationService {
     await _plugin.cancel(_getNotificationId(eventId));
   }
 
+  /// Cancels all scheduled notifications and clears notification metadata.
+  Future<void> clearAll() async {
+    await _plugin.cancelAll();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_timeZoneStorageKey);
+  }
+
   // ---------------------------------------------------------------------------
   // Private Helpers
   // ---------------------------------------------------------------------------

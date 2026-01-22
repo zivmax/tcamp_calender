@@ -91,6 +91,19 @@ class EventRepository extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Clears all events and cancels any scheduled reminders.
+  Future<void> clearAll() async {
+    final box = _box;
+    if (box == null) return;
+
+    for (final event in box.values) {
+      await _notificationService.cancelEventReminder(event.id);
+    }
+
+    await box.clear();
+    notifyListeners();
+  }
+
   /// Returns all events (including recurrence expansions) for a specific day.
   List<CalendarEvent> eventsForDay(DateTime day) {
     final dayOnly = DateTime(day.year, day.month, day.day);

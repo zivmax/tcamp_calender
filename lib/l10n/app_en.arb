@@ -169,6 +169,30 @@
   "@exportIcs": {
     "description": "Action to export calendar data as ICS."
   },
+  "dataManagement": "Data",
+  "@dataManagement": {
+    "description": "Section label for data management actions."
+  },
+  "clearDataAction": "Clear data",
+  "@clearDataAction": {
+    "description": "Button text to clear all app data."
+  },
+  "clearDataTitle": "Clear app data",
+  "@clearDataTitle": {
+    "description": "Dialog title confirming data deletion."
+  },
+  "clearDataDescription": "This will delete all events, subscriptions, and settings on this device. This action cannot be undone.",
+  "@clearDataDescription": {
+    "description": "Dialog message warning about data deletion."
+  },
+  "cancelAction": "Cancel",
+  "@cancelAction": {
+    "description": "Label for cancel actions."
+  },
+  "dataCleared": "Data cleared.",
+  "@dataCleared": {
+    "description": "Snackbar message shown after data is cleared."
+  },
   "networkSubscriptions": "Network Subscriptions",
   "@networkSubscriptions": {
     "description": "Label for calendar subscriptions from network sources."

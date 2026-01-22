@@ -335,6 +335,42 @@ abstract class AppLocalizations {
   /// **'Export ICS'**
   String get exportIcs;
 
+  /// Section label for data management actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Data'**
+  String get dataManagement;
+
+  /// Button text to clear all app data.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear data'**
+  String get clearDataAction;
+
+  /// Dialog title confirming data deletion.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear app data'**
+  String get clearDataTitle;
+
+  /// Dialog message warning about data deletion.
+  ///
+  /// In en, this message translates to:
+  /// **'This will delete all events, subscriptions, and settings on this device. This action cannot be undone.'**
+  String get clearDataDescription;
+
+  /// Label for cancel actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelAction;
+
+  /// Snackbar message shown after data is cleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Data cleared.'**
+  String get dataCleared;
+
   /// Label for calendar subscriptions from network sources.
   ///
   /// In en, this message translates to:

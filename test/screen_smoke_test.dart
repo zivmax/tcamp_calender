@@ -186,7 +186,8 @@ void main() {
     await tester.tap(find.byIcon(Icons.chevron_left));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Event 3').first);
+    final eventFinder = find.text('Event 3').hitTestable();
+    await tester.tap(eventFinder);
     await tester.pumpAndSettle();
   });
 
@@ -342,6 +343,49 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(settingsService.locale?.languageCode, 'en');
+  });
+
+  testWidgets('SettingsScreen clears all app data', (tester) async {
+    _configureTestView(tester);
+    SharedPreferences.setMockInitialValues({});
+    final settingsService = SettingsService();
+    await settingsService.load();
+    await settingsService.setLocale(const Locale('en'));
+
+    final repo = TestEventRepository(
+      notificationService: TestNotificationService(),
+      seed: [sampleEvent(id: '10', start: DateTime.now())],
+    );
+    const icsService = IcsService();
+    final subscriptionService = TestSubscriptionService(icsService: icsService)
+      ..stored = ['https://example.com/feed.ics'];
+
+    await tester.pumpWidget(
+      buildTestApp(
+        child: SettingsScreen(
+          icsService: icsService,
+          subscriptionService: subscriptionService,
+        ),
+        repo: repo,
+        settingsService: settingsService,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('https://example.com/feed.ics'), findsOneWidget);
+    expect(settingsService.locale?.languageCode, 'en');
+    expect(repo.events, isNotEmpty);
+
+    await tester.tap(find.text('Clear data'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.widgetWithText(FilledButton, 'Clear data'));
+    await tester.pumpAndSettle();
+
+    expect(repo.events, isEmpty);
+    expect(subscriptionService.stored, isEmpty);
+    expect(settingsService.locale, isNull);
+    expect(find.text('https://example.com/feed.ics'), findsNothing);
   });
 
   testWidgets('SettingsScreen renders without SettingsService provider',
