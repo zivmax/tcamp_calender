@@ -120,15 +120,10 @@ jobs:
       - run: flutter pub get
       - run: flutter build windows --release
 
-      - name: Package Windows
-        run: |
-          Compress-Archive -Path "build\\windows\\x64\\runner\\Release\\*" -DestinationPath "windows-x64-release.zip"
-        shell: pwsh
-
       - uses: actions/upload-artifact@v4
         with:
           name: windows-x64
-          path: windows-x64-release.zip
+          path: build/windows/x64/runner/Release/**
 
   linux:
     name: "Linux (x64) 🐧"
@@ -149,17 +144,10 @@ jobs:
       - run: flutter pub get
       - run: flutter build linux --release
 
-      - name: Package Linux x64
-        run: |
-          mkdir -p release
-          cp -r build/linux/x64/release/bundle/* release/ || true
-          tar -czf linux-x64-release.tar.gz -C release .
-          mv linux-x64-release.tar.gz release/
-
       - uses: actions/upload-artifact@v4
         with:
           name: linux-x64
-          path: release/linux-x64-release.tar.gz
+          path: build/linux/x64/release/bundle/**
 
   linux-arm64:
     name: "Linux (arm64) 🐧 (via Docker emulation)"
@@ -178,17 +166,10 @@ jobs:
         run: |
           docker run --rm --platform linux/arm64 -v "${{ github.workspace }}:/workspace" -w /workspace ghcr.io/cirruslabs/flutter:stable bash -lc "sudo apt-get update && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev llvm lld && flutter pub get && flutter build linux --release"
 
-      - name: Package Linux arm64
-        run: |
-          mkdir -p release
-          cp -r build/linux/arm64/release/bundle/* release/ || true
-          tar -czf linux-arm64-release.tar.gz -C release .
-          mv linux-arm64-release.tar.gz release/
-
       - uses: actions/upload-artifact@v4
         with:
           name: linux-arm64
-          path: release/linux-arm64-release.tar.gz
+          path: build/linux/arm64/release/bundle/**
 
   create_release:
     name: "Create GitHub Release & Upload Artifacts 🚀"
@@ -236,6 +217,17 @@ jobs:
           name: web-release
           path: artifacts/web
 
+      - name: Package Windows x64
+        run: |
+          cd artifacts/windows-x64
+          zip -r ../windows-x64-release.zip .
+
+      - name: Package Linux x64
+        run: tar -czf artifacts/linux-x64-release.tar.gz -C artifacts/linux-x64 .
+
+      - name: Package Linux arm64
+        run: tar -czf artifacts/linux-arm64-release.tar.gz -C artifacts/linux-arm64 .
+
       - name: List downloaded artifacts
         run: ls -R artifacts || true
 
@@ -245,9 +237,9 @@ jobs:
           files: |
             artifacts/android/*
             artifacts/macos/*
-            artifacts/windows-x64/*
-            artifacts/linux-x64/*
-            artifacts/linux-arm64/*
+            artifacts/windows-x64-release.zip
+            artifacts/linux-x64-release.tar.gz
+            artifacts/linux-arm64-release.tar.gz
             artifacts/web/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
