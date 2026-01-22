@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -52,10 +55,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['ics'],
+      withData: kIsWeb,
     );
-    if (result == null || result.files.single.path == null) return;
-    final file = File(result.files.single.path!);
-    final content = await file.readAsString();
+    if (result == null) return;
+    final String content;
+    if (kIsWeb) {
+      final bytes = result.files.single.bytes;
+      if (bytes == null) return;
+      content = utf8.decode(bytes);
+    } else {
+      if (result.files.single.path == null) return;
+      final file = File(result.files.single.path!);
+      content = await file.readAsString();
+    }
     final events = widget.icsService.importFromIcs(content);
     if (!mounted) return;
     final repo = context.read<EventRepository>();
@@ -65,16 +77,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _exportIcs() async {
     final repo = context.read<EventRepository>();
     final content = widget.icsService.exportToIcs(repo.events);
-    final path = await FilePicker.platform.saveFile(
-      dialogTitle: AppLocalizations.of(context)!.saveCalendarAs,
-      fileName: 'calendar.ics',
-      type: FileType.custom,
-      allowedExtensions: ['ics'],
-    );
-    if (path == null) return;
-    if (!mounted) return;
-    final file = File(path);
-    await file.writeAsString(content);
+    if (kIsWeb) {
+      final bytes = Uint8List.fromList(utf8.encode(content));
+      await FilePicker.platform.saveFile(
+        dialogTitle: AppLocalizations.of(context)!.saveCalendarAs,
+        fileName: 'calendar.ics',
+        type: FileType.custom,
+        allowedExtensions: ['ics'],
+        bytes: bytes,
+      );
+    } else {
+      final path = await FilePicker.platform.saveFile(
+        dialogTitle: AppLocalizations.of(context)!.saveCalendarAs,
+        fileName: 'calendar.ics',
+        type: FileType.custom,
+        allowedExtensions: ['ics'],
+      );
+      if (path == null) return;
+      if (!mounted) return;
+      final file = File(path);
+      await file.writeAsString(content);
+    }
   }
 
   Future<void> _refreshSubscriptions() async {
