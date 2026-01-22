@@ -2,6 +2,10 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
+import 'package:hive/src/adapters/date_time_adapter.dart';
+import 'package:hive/src/binary/binary_reader_impl.dart';
+import 'package:hive/src/binary/binary_writer_impl.dart';
+import 'package:hive/src/registry/type_registry_impl.dart';
 
 import 'package:tcamp_calender/models/calendar_event.dart';
 import 'package:tcamp_calender/models/rrule.dart';
@@ -126,6 +130,32 @@ void main() {
 
     await box.close();
     await tempDir.delete(recursive: true);
+  });
+
+  test('CalendarEvent adapter read/write with binary reader/writer', () {
+    final event = CalendarEvent(
+      id: 'id-7',
+      title: 'Binary',
+      description: 'Direct',
+      location: 'Desk',
+      start: DateTime(2026, 1, 19, 10, 0),
+      end: DateTime(2026, 1, 19, 11, 0),
+      isAllDay: false,
+      reminderMinutes: 20,
+      rrule: 'FREQ=DAILY;COUNT=2',
+    );
+
+    final typeRegistry = TypeRegistryImpl();
+    typeRegistry.registerAdapter<DateTime>(DateTimeAdapter());
+
+    final adapter = CalendarEventAdapter();
+    final writer = BinaryWriterImpl(typeRegistry);
+    adapter.write(writer, event);
+
+    final reader = BinaryReaderImpl(writer.toBytes(), typeRegistry);
+    final decoded = adapter.read(reader);
+
+    expect(decoded, event);
   });
 
   test('RRule parsing and formatting', () {
