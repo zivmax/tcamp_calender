@@ -340,25 +340,24 @@ class _WeekPageState extends State<WeekPage> {
                                       .toList();
                                   return Stack(
                                     children: [
-                                      for (final event in events)
-                                        _buildEventBar(context, event, day, constraints.maxWidth),
-                                      
                                       Positioned.fill(
                                         child: GestureDetector(
-                                           onTapUp: (details) {
-                                              final tapMinutes = details.localPosition.dy;
-                                              final hour = (tapMinutes / 60).floor();
-                                              final minute = (tapMinutes % 60).toInt();
-                                              final newEventDate = DateTime(day.year, day.month, day.day, hour, minute);
-                                              Navigator.of(context).push(
-                                                MaterialPageRoute<void>(
-                                                  builder: (_) => EventFormScreen(initialDate: newEventDate),
-                                                ),
-                                              );
-                                           },
-                                           behavior: HitTestBehavior.translucent,
+                                          onTapUp: (details) {
+                                            final tapMinutes = details.localPosition.dy;
+                                            final hour = (tapMinutes / 60).floor();
+                                            final minute = (tapMinutes % 60).toInt();
+                                            final newEventDate = DateTime(day.year, day.month, day.day, hour, minute);
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute<void>(
+                                                builder: (_) => EventFormScreen(initialDate: newEventDate),
+                                              ),
+                                            );
+                                          },
+                                          behavior: HitTestBehavior.translucent,
                                         ),
-                                      )
+                                      ),
+                                      for (final event in events)
+                                        _buildEventBar(context, event, day, constraints.maxWidth),
                                     ],
                                   );
                                }),
