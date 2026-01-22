@@ -241,6 +241,41 @@ jobs:
           echo "Final Release Assets:"
           ls -l release_assets
 
+      - name: Remove existing release and tag if present
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Determine tag: prefer pushed tag, fall back to github.ref, then default to 'autobuild'
+            const tag = (github.context.payload && github.context.payload.ref && github.context.payload.ref.startsWith('refs/tags/') ? github.context.payload.ref.replace('refs/tags/', '') : (github.ref && github.ref.startsWith('refs/tags/') ? github.ref.replace('refs/tags/', '') : 'autobuild'));
+
+            core.info(`Target tag for release cleanup: ${tag}`);
+
+            // Delete existing release if it exists
+            try {
+              const release = await github.rest.repos.getReleaseByTag({ owner: context.repo.owner, repo: context.repo.repo, tag });
+              core.info(`Found existing release id=${release.data.id}, deleting...`);
+              await github.rest.repos.deleteRelease({ owner: context.repo.owner, repo: context.repo.repo, release_id: release.data.id });
+            } catch (err) {
+              if (err.status === 404) {
+                core.info('No existing release found, continuing');
+              } else {
+                throw err;
+              }
+            }
+
+            // Delete the git tag ref if present
+            try {
+              await github.rest.git.deleteRef({ owner: context.repo.owner, repo: context.repo.repo, ref: `tags/${tag}` });
+              core.info(`Deleted git ref tags/${tag}`);
+            } catch (err) {
+              if (err.status === 422 || err.status === 404) {
+                core.info('No git tag ref to delete; continuing');
+              } else {
+                throw err;
+              }
+            }
+
       - name: Create Release and upload assets
         uses: softprops/action-gh-release@v1
         with:
