@@ -213,6 +213,17 @@ jobs:
       - run: flutter pub get
       - run: flutter build linux --release
 
+      - name: Make Linux binary executable
+        run: |
+          set -e
+          BINARY=build/linux/x64/release/bundle/tcamp_calendar
+          if [ -f "$BINARY" ]; then
+            chmod +x "$BINARY"
+            echo "Set +x on $BINARY"
+          else
+            echo "Warning: $BINARY not found"
+          fi
+
       - uses: actions/upload-artifact@v4
         with:
           name: linux-x64
@@ -252,6 +263,24 @@ jobs:
         with:
           name: linux-x64
           path: artifacts/linux-x64
+
+      - name: Ensure Linux binary is executable
+        run: |
+          set -e
+          BINARY=artifacts/linux-x64/tcamp_calendar
+          if [ -f "$BINARY" ]; then
+            chmod +x "$BINARY"
+            echo "Set +x on $BINARY"
+          else
+            # If binary lives in a subdir, try to find a likely executable (no extension)
+            FOUND=$(find artifacts/linux-x64 -type f ! -name "*.*" | head -n1 || true)
+            if [ -n "$FOUND" ]; then
+              chmod +x "$FOUND"
+              echo "Set +x on $FOUND"
+            else
+              echo "Warning: Linux binary not found to set +x"
+            fi
+          fi
 
 
       - name: Download Web artifact
