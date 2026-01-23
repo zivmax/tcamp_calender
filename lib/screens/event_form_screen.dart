@@ -6,6 +6,7 @@ import '../l10n/app_localizations.dart';
 import '../models/calendar_event.dart';
 import '../models/rrule.dart';
 import '../services/event_repository.dart';
+import '../utils/time_format.dart';
 
 /// Screen for creating or editing calendar events.
 ///
@@ -113,9 +114,17 @@ class _EventFormScreenState extends State<EventFormScreen> {
 
   Future<void> _pickTime({required bool isStart}) async {
     final current = isStart ? _draft.start : _draft.end;
+    final use24Hour = shouldUse24HourFormat(context);
     final picked = await showTimePicker(
       context: context,
       initialTime: TimeOfDay.fromDateTime(current),
+      builder: (context, child) {
+        final mediaQuery = MediaQuery.of(context);
+        return MediaQuery(
+          data: mediaQuery.copyWith(alwaysUse24HourFormat: use24Hour),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
 
     if (picked == null) return;
@@ -141,9 +150,17 @@ class _EventFormScreenState extends State<EventFormScreen> {
   }
 
   Future<void> _pickAllDayNotificationTime() async {
+    final use24Hour = shouldUse24HourFormat(context);
     final picked = await showTimePicker(
       context: context,
       initialTime: _draft.allDayNotificationTime,
+      builder: (context, child) {
+        final mediaQuery = MediaQuery.of(context);
+        return MediaQuery(
+          data: mediaQuery.copyWith(alwaysUse24HourFormat: use24Hour),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
     );
 
     if (picked == null) return;
@@ -236,7 +253,7 @@ class _EventFormScreenState extends State<EventFormScreen> {
     final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).toString();
     final dateFormat = DateFormat.yMMMd(locale);
-    final timeFormat = DateFormat.Hm(locale);
+    final timeFormat = timeFormatForLocale(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -324,7 +341,7 @@ class _EventFormScreenState extends State<EventFormScreen> {
             if (_draft.isAllDay)
               ListTile(
                 title: Text(l10n.notificationTime),
-                subtitle: Text(_draft.allDayNotificationTime.format(context)),
+                subtitle: Text(formatTimeOfDay(context, _draft.allDayNotificationTime)),
                 trailing: IconButton(
                   onPressed: _pickAllDayNotificationTime,
                   icon: const Icon(Icons.notifications_active),

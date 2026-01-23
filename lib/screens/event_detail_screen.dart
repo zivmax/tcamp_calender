@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../models/calendar_event.dart';
 import '../services/event_repository.dart';
+import '../utils/time_format.dart';
 import 'event_form_screen.dart';
 
 /// Screen displaying event details with edit and delete actions.
@@ -19,7 +20,7 @@ class EventDetailScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final locale = Localizations.localeOf(context).toString();
     final dateFormat = DateFormat.yMMMd(locale);
-    final timeFormat = DateFormat.Hm(locale);
+    final timeFormat = timeFormatForLocale(context);
 
     return Scaffold(
       appBar: AppBar(
