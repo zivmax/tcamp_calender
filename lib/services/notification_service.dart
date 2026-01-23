@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,8 +17,8 @@ class NotificationService {
   NotificationService({
     FlutterLocalNotificationsPlugin? plugin,
     Future<TimezoneInfo> Function()? timeZoneProvider,
-  })  : _plugin = plugin ?? FlutterLocalNotificationsPlugin(),
-        _timeZoneProvider = timeZoneProvider ?? FlutterTimezone.getLocalTimezone;
+  }) : _plugin = plugin ?? FlutterLocalNotificationsPlugin(),
+       _timeZoneProvider = timeZoneProvider ?? FlutterTimezone.getLocalTimezone;
 
   final FlutterLocalNotificationsPlugin _plugin;
   final Future<TimezoneInfo> Function() _timeZoneProvider;
@@ -31,6 +32,7 @@ class NotificationService {
   ///
   /// Must be called before scheduling any notifications.
   Future<void> init() async {
+    if (kIsWeb) return;
     tz.initializeTimeZones();
     final timeZoneId = await _configureLocalTimeZone();
     await _storeLastTimeZoneId(timeZoneId);
@@ -46,6 +48,7 @@ class NotificationService {
   ///
   /// Returns true when a change was detected and applied.
   Future<bool> refreshLocalTimeZoneIfChanged() async {
+    if (kIsWeb) return false;
     final currentId = await _getSystemTimeZoneId();
     if (currentId == null || currentId.isEmpty) return false;
 
@@ -61,6 +64,7 @@ class NotificationService {
   ///
   /// Does nothing if the event has no reminder or the reminder time has passed.
   Future<void> scheduleEventReminder(CalendarEvent event) async {
+    if (kIsWeb) return;
     if (!event.hasReminder) return;
 
     final scheduled = event.start.subtract(
@@ -96,12 +100,15 @@ class NotificationService {
 
   /// Cancels a scheduled reminder notification.
   Future<void> cancelEventReminder(String eventId) async {
+    if (kIsWeb) return;
     await _plugin.cancel(_getNotificationId(eventId));
   }
 
   /// Cancels all scheduled notifications and clears notification metadata.
   Future<void> clearAll() async {
-    await _plugin.cancelAll();
+    if (!kIsWeb) {
+      await _plugin.cancelAll();
+    }
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_timeZoneStorageKey);
   }
@@ -147,8 +154,10 @@ class NotificationService {
   }
 
   Future<void> _requestPermissions() async {
-    final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final androidPlugin = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     await androidPlugin?.requestNotificationsPermission();
     await androidPlugin?.requestExactAlarmsPermission();
     // Linux and Windows do not require runtime notification permissions.
@@ -208,4 +217,3 @@ class NotificationService {
     return eventId.hashCode & 0x7fffffff;
   }
 }
-
