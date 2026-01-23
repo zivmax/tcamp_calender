@@ -221,6 +221,10 @@ class _EventFormScreenState extends State<EventFormScreen> {
       rrule: _buildRrule(),
     );
 
+    // Capture repository from the context before any await to avoid using
+    // BuildContext across async gaps (see lint: use_build_context_synchronously).
+    final repo = context.read<EventRepository>();
+
     if (kIsWeb && event.hasReminder) {
       NotificationService? notificationService;
       try {
@@ -230,8 +234,6 @@ class _EventFormScreenState extends State<EventFormScreen> {
       }
       await notificationService?.requestWebPermission();
     }
-
-    final repo = context.read<EventRepository>();
 
     if (widget.isEditing) {
       await repo.updateEvent(event);
