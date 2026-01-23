@@ -124,8 +124,9 @@ graph TD
     *   **存储**：全量使用 Hive 本地数据库存储用户数据，应用启动时即可快速恢复状态，无需等待网络请求。
 
 ### 4.5 全面的自动化测试保障 (Comprehensive Automated Testing)
-*   **亮点**：项目建立了完善的自动化测试体系，总体代码覆盖率高达 **95.3%**，核心业务模块（Localization, Services）覆盖率接近 100%，确保了重构和迭代过程中的系统稳定性。
+*   **亮点**：项目建立了完善的自动化测试体系，总体代码覆盖率高达 **95%**，核心业务模块（Localization, Services）覆盖率接近 100%，确保了重构和迭代过程中的系统稳定性。
 *   **实现原理**：
     *   **单元测试 (Unit Tests)**：针对 `models` 和 `services` 层编写了详尽的单元测试（如 `event_repository_test.dart`, `rrule_test.dart`），利用 `Mockito` 模拟外部依赖，重点验证日历算法、重复规则解析等复杂逻辑。
     *   **组件测试 (Widget Tests)**：使用 `WidgetTester` 模拟用户交互，覆盖了 `EventFormScreen` 表单提交、`SettingsScreen`配置修改等关键 UI 流程，确保组件渲染与交互逻辑正确。
     *   **覆盖率追踪**：集成 `lcov` 工具链，定期生成可视化测试报告，持续监控未覆盖的分支与行数，驱动测试用例的补充完善。
+    ![测试覆盖率报告示例](./image.png)
