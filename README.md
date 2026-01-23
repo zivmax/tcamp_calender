@@ -1,4 +1,4 @@
-# tcamp_calendar
+# TCamp Calendar
 
 [![CD Workflow](https://github.com/zivmax/tcamp_calendar/actions/workflows/cd.yml/badge.svg?branch=main)](https://github.com/zivmax/tcamp_calendar/actions/workflows/cd.yml)
 [![Release](https://img.shields.io/github/v/release/zivmax/tcamp_calendar?display_name=tag&sort=semver)](https://github.com/zivmax/tcamp_calendar/releases)
