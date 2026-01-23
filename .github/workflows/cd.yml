@@ -218,41 +218,12 @@ jobs:
           name: linux-x64
           path: build/linux/x64/release/bundle/**
 
-  linux-arm64:
-    name: "Linux (arm64) 🐧 (via Docker emulation)"
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup QEMU (multiarch emulation)
-        uses: docker/setup-qemu-action@v2
-
-      - name: Setup Docker buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Pub (host)
-        uses: actions/cache@v4
-        with:
-          path: ~/.pub-cache
-          key: ${{ runner.os }}-flutter-${{ env.FLUTTER_CHANNEL }}-${{ hashFiles('**/pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-flutter-${{ env.FLUTTER_CHANNEL }}-
-
-      - name: Build Linux arm64 using CirrusCI Flutter image
-        run: |
-          docker run --rm --platform linux/arm64 -v "${{ github.workspace }}:/workspace" -v "$HOME/.pub-cache:/root/.pub-cache" -w /workspace ghcr.io/cirruslabs/flutter:stable bash -lc "sudo apt-get update && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev llvm lld && flutter pub get && flutter build linux --release"
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: linux-arm64
-          path: build/linux/arm64/release/bundle/**
 
   create_release:
     name: "Create GitHub Release & Upload Artifacts 🚀"
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    needs: [android, macos, windows, linux, linux-arm64, web]
+    needs: [android, macos, windows, linux, web]
     if: "startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'"
     steps:
       - name: Checkout
@@ -282,11 +253,6 @@ jobs:
           name: linux-x64
           path: artifacts/linux-x64
 
-      - name: Download Linux arm64 artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: linux-arm64
-          path: artifacts/linux-arm64
 
       - name: Download Web artifact
         uses: actions/download-artifact@v4
@@ -310,7 +276,6 @@ jobs:
 
           echo "Packaging Linux..."
           tar -czf release_assets/linux-x64-release.tar.gz -C artifacts/linux-x64 .
-          tar -czf release_assets/linux-arm64-release.tar.gz -C artifacts/linux-arm64 .
 
           echo "Packaging Web..."
           (cd artifacts/web && zip -r ../../release_assets/web-release.zip .)
