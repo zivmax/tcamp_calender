@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:tcamp_calender/models/calendar_event.dart';
-import 'package:tcamp_calender/services/ics_service.dart';
+import 'package:tcamp_calendar/models/calendar_event.dart';
+import 'package:tcamp_calendar/services/ics_service.dart';
 
 void main() {
   test('export and import ICS round-trip', () {

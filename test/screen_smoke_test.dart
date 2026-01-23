@@ -3,16 +3,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-import 'package:tcamp_calender/models/calendar_event.dart';
-import 'package:tcamp_calender/screens/day_view.dart';
-import 'package:tcamp_calender/screens/event_detail_screen.dart';
-import 'package:tcamp_calender/screens/event_form_screen.dart';
-import 'package:tcamp_calender/screens/month_view.dart';
-import 'package:tcamp_calender/screens/settings_screen.dart';
-import 'package:tcamp_calender/screens/week_view.dart';
-import 'package:tcamp_calender/services/ics_service.dart';
-import 'package:tcamp_calender/services/lunar_service.dart';
-import 'package:tcamp_calender/services/settings_service.dart';
+import 'package:tcamp_calendar/models/calendar_event.dart';
+import 'package:tcamp_calendar/screens/day_view.dart';
+import 'package:tcamp_calendar/screens/event_detail_screen.dart';
+import 'package:tcamp_calendar/screens/event_form_screen.dart';
+import 'package:tcamp_calendar/screens/month_view.dart';
+import 'package:tcamp_calendar/screens/settings_screen.dart';
+import 'package:tcamp_calendar/screens/week_view.dart';
+import 'package:tcamp_calendar/services/ics_service.dart';
+import 'package:tcamp_calendar/services/lunar_service.dart';
+import 'package:tcamp_calendar/services/settings_service.dart';
 
 import 'test_helpers.dart';
 

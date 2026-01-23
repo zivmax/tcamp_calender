@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive/hive.dart';
 
-import 'package:tcamp_calender/models/calendar_event.dart';
-import 'package:tcamp_calender/services/event_repository.dart';
-import 'package:tcamp_calender/services/notification_service.dart';
+import 'package:tcamp_calendar/models/calendar_event.dart';
+import 'package:tcamp_calendar/services/event_repository.dart';
+import 'package:tcamp_calendar/services/notification_service.dart';
 
 class _FakeNotificationService extends NotificationService {
   int scheduled = 0;

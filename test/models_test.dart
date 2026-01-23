@@ -7,8 +7,8 @@ import 'package:hive/src/binary/binary_reader_impl.dart';
 import 'package:hive/src/binary/binary_writer_impl.dart';
 import 'package:hive/src/registry/type_registry_impl.dart';
 
-import 'package:tcamp_calender/models/calendar_event.dart';
-import 'package:tcamp_calender/models/rrule.dart';
+import 'package:tcamp_calendar/models/calendar_event.dart';
+import 'package:tcamp_calendar/models/rrule.dart';
 
 void main() {
   test('CalendarEvent getters and json', () {

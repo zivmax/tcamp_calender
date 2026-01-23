@@ -3,16 +3,16 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
-import 'package:tcamp_calender/l10n/app_localizations.dart';
-import 'package:tcamp_calender/models/calendar_event.dart';
-import 'package:tcamp_calender/screens/day_view.dart';
-import 'package:tcamp_calender/screens/event_detail_screen.dart';
-import 'package:tcamp_calender/screens/home_screen.dart';
-import 'package:tcamp_calender/services/event_repository.dart';
-import 'package:tcamp_calender/services/ics_service.dart';
-import 'package:tcamp_calender/services/lunar_service.dart';
-import 'package:tcamp_calender/services/notification_service.dart';
-import 'package:tcamp_calender/services/subscription_service.dart';
+import 'package:tcamp_calendar/l10n/app_localizations.dart';
+import 'package:tcamp_calendar/models/calendar_event.dart';
+import 'package:tcamp_calendar/screens/day_view.dart';
+import 'package:tcamp_calendar/screens/event_detail_screen.dart';
+import 'package:tcamp_calendar/screens/home_screen.dart';
+import 'package:tcamp_calendar/services/event_repository.dart';
+import 'package:tcamp_calendar/services/ics_service.dart';
+import 'package:tcamp_calendar/services/lunar_service.dart';
+import 'package:tcamp_calendar/services/notification_service.dart';
+import 'package:tcamp_calendar/services/subscription_service.dart';
 
 class _FakeNotificationService extends NotificationService {
   @override

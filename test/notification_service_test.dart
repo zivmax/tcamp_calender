@@ -5,8 +5,8 @@ import 'package:flutter_local_notifications_platform_interface/flutter_local_not
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tcamp_calender/models/calendar_event.dart';
-import 'package:tcamp_calender/services/notification_service.dart';
+import 'package:tcamp_calendar/models/calendar_event.dart';
+import 'package:tcamp_calendar/services/notification_service.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 

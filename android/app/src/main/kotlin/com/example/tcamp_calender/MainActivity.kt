@@ -1,4 +1,4 @@
-package com.example.tcamp_calender
+package com.example.tcamp_calendar
 
 import io.flutter.embedding.android.FlutterActivity
 

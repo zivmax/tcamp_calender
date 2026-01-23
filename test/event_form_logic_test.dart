@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:tcamp_calender/screens/event_form_screen.dart';
+import 'package:tcamp_calendar/screens/event_form_screen.dart';
 
 void main() {
   test('RepeatChoice conversion from/to RRULE', () {

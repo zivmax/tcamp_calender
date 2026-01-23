@@ -3,8 +3,8 @@ import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:tcamp_calender/screens/settings_screen.dart';
-import 'package:tcamp_calender/services/ics_service.dart';
+import 'package:tcamp_calendar/screens/settings_screen.dart';
+import 'package:tcamp_calendar/services/ics_service.dart';
 
 import 'test_helpers.dart';
 

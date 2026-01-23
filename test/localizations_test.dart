@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:tcamp_calender/l10n/app_localizations.dart';
-import 'package:tcamp_calender/l10n/app_localizations_en.dart';
-import 'package:tcamp_calender/l10n/app_localizations_zh.dart';
+import 'package:tcamp_calendar/l10n/app_localizations.dart';
+import 'package:tcamp_calendar/l10n/app_localizations_en.dart';
+import 'package:tcamp_calendar/l10n/app_localizations_zh.dart';
 
 void main() {
   void exerciseLocalizations(AppLocalizations l10n) {

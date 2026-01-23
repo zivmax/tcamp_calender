@@ -3,13 +3,13 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:provider/provider.dart';
 
-import 'package:tcamp_calender/l10n/app_localizations.dart';
-import 'package:tcamp_calender/models/calendar_event.dart';
-import 'package:tcamp_calender/services/event_repository.dart';
-import 'package:tcamp_calender/services/lunar_service.dart';
-import 'package:tcamp_calender/services/notification_service.dart';
-import 'package:tcamp_calender/services/settings_service.dart';
-import 'package:tcamp_calender/services/subscription_service.dart';
+import 'package:tcamp_calendar/l10n/app_localizations.dart';
+import 'package:tcamp_calendar/models/calendar_event.dart';
+import 'package:tcamp_calendar/services/event_repository.dart';
+import 'package:tcamp_calendar/services/lunar_service.dart';
+import 'package:tcamp_calendar/services/notification_service.dart';
+import 'package:tcamp_calendar/services/settings_service.dart';
+import 'package:tcamp_calendar/services/subscription_service.dart';
 
 class TestNotificationService extends NotificationService {
   @override

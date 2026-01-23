@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lunar/lunar.dart';
 
-import 'package:tcamp_calender/services/lunar_service.dart';
+import 'package:tcamp_calendar/services/lunar_service.dart';
 
 void main() {
   test('formatLunar returns non-empty output for Chinese locale and empty for non-Chinese', () {

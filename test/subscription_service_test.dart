@@ -3,8 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:tcamp_calender/services/ics_service.dart';
-import 'package:tcamp_calender/services/subscription_service.dart';
+import 'package:tcamp_calendar/services/ics_service.dart';
+import 'package:tcamp_calendar/services/subscription_service.dart';
 
 void main() {
   setUp(() {
