@@ -46,6 +46,7 @@ graph TD
         MonthView[MonthView]
         WeekView[WeekView]
         Form[EventFormScreen]
+        Settings[SettingsScreen]
     end
 
     subgraph State_Layer ["状态管理层 (Provider)"]
@@ -73,6 +74,12 @@ graph TD
     
     Form --> EventRepo
     Form --> NotifSvc
+
+    Settings --> EventRepo
+    Settings --> SettingsSvc
+    Settings --> SubSvc
+    Settings --> NotifSvc
+    Settings --> IcsSvc
     
     EventRepo --> HiveDB
     EventRepo --> IcsSvc
