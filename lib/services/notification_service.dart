@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
@@ -9,6 +10,8 @@ import 'package:timezone/timezone.dart' as tz;
 
 import '../l10n/app_localizations.dart';
 import '../models/calendar_event.dart';
+import 'web_notification_stub.dart'
+    if (dart.library.html) 'web_notification_web.dart';
 
 /// Service for scheduling local notifications for calendar reminders.
 ///
@@ -17,11 +20,14 @@ class NotificationService {
   NotificationService({
     FlutterLocalNotificationsPlugin? plugin,
     Future<TimezoneInfo> Function()? timeZoneProvider,
+    WebNotificationAdapter? webAdapter,
   }) : _plugin = plugin ?? FlutterLocalNotificationsPlugin(),
-       _timeZoneProvider = timeZoneProvider ?? FlutterTimezone.getLocalTimezone;
+       _timeZoneProvider = timeZoneProvider ?? FlutterTimezone.getLocalTimezone,
+       _webAdapter = webAdapter ?? WebNotificationAdapter();
 
   final FlutterLocalNotificationsPlugin _plugin;
   final Future<TimezoneInfo> Function() _timeZoneProvider;
+  final WebNotificationAdapter _webAdapter;
 
   static const _channelId = 'calendar_reminders';
   static const _windowsAppId = 'com.tcamp.calendar';
@@ -32,7 +38,10 @@ class NotificationService {
   ///
   /// Must be called before scheduling any notifications.
   Future<void> init() async {
-    if (kIsWeb) return;
+    if (kIsWeb) {
+      unawaited(_webAdapter.requestPermission());
+      return;
+    }
     tz.initializeTimeZones();
     final timeZoneId = await _configureLocalTimeZone();
     await _storeLastTimeZoneId(timeZoneId);
@@ -64,7 +73,6 @@ class NotificationService {
   ///
   /// Does nothing if the event has no reminder or the reminder time has passed.
   Future<void> scheduleEventReminder(CalendarEvent event) async {
-    if (kIsWeb) return;
     if (!event.hasReminder) return;
 
     final scheduled = event.start.subtract(
@@ -73,6 +81,12 @@ class NotificationService {
 
     // Don't schedule past notifications
     if (scheduled.isBefore(DateTime.now())) return;
+
+    if (kIsWeb) {
+      unawaited(_webAdapter.requestPermission());
+      _webAdapter.schedule(event, scheduled);
+      return;
+    }
 
     final notificationId = _getNotificationId(event.id);
     final loc = _getLocalizations();
@@ -100,13 +114,18 @@ class NotificationService {
 
   /// Cancels a scheduled reminder notification.
   Future<void> cancelEventReminder(String eventId) async {
-    if (kIsWeb) return;
+    if (kIsWeb) {
+      _webAdapter.cancel(eventId);
+      return;
+    }
     await _plugin.cancel(_getNotificationId(eventId));
   }
 
   /// Cancels all scheduled notifications and clears notification metadata.
   Future<void> clearAll() async {
-    if (!kIsWeb) {
+    if (kIsWeb) {
+      _webAdapter.clear();
+    } else {
       await _plugin.cancelAll();
     }
     final prefs = await SharedPreferences.getInstance();
