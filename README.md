@@ -2,6 +2,7 @@
 
 [![CD Workflow](https://github.com/zivmax/tcamp_calendar/actions/workflows/cd.yml/badge.svg?branch=main)](https://github.com/zivmax/tcamp_calendar/actions/workflows/cd.yml)
 [![Release](https://img.shields.io/github/v/release/zivmax/tcamp_calendar?display_name=tag&sort=semver)](https://github.com/zivmax/tcamp_calendar/releases)
+[![Demo](https://img.shields.io/badge/demo-GitHub%20Pages-brightgreen)](https://zivmax.github.io/tcamp_calendar/)
 [![License](https://img.shields.io/github/license/zivmax/tcamp_calendar)](https://github.com/zivmax/tcamp_calendar/blob/main/LICENSE)
 
 TCamp Calendar is a Flutter calendar app with event management, recurring events, notifications, and ICS import/export support. This repository contains the production implementation used by the TCamp team.
