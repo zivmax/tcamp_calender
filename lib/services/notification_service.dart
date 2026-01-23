@@ -39,7 +39,6 @@ class NotificationService {
   /// Must be called before scheduling any notifications.
   Future<void> init() async {
     if (kIsWeb) {
-      unawaited(_webAdapter.requestPermission());
       return;
     }
     tz.initializeTimeZones();
@@ -83,7 +82,6 @@ class NotificationService {
     if (scheduled.isBefore(DateTime.now())) return;
 
     if (kIsWeb) {
-      unawaited(_webAdapter.requestPermission());
       _webAdapter.schedule(event, scheduled);
       return;
     }
@@ -130,6 +128,14 @@ class NotificationService {
     }
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_timeZoneStorageKey);
+  }
+
+  /// Requests browser notification permission on web.
+  ///
+  /// Must be called from a user-initiated action to avoid browser warnings.
+  Future<void> requestWebPermission() async {
+    if (!kIsWeb) return;
+    await _webAdapter.requestPermission();
   }
 
   // ---------------------------------------------------------------------------

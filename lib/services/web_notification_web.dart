@@ -35,7 +35,7 @@ class WebNotificationAdapter {
       (_isSupported && _notificationPermission == 'granted');
 
   void schedule(CalendarEvent event, DateTime scheduledTime) {
-    if (!canNotify) return;
+    if (!_isSupported) return;
     cancel(event.id);
 
     final delay = scheduledTime.difference(DateTime.now());

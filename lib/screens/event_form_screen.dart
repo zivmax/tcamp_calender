@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -6,17 +7,14 @@ import '../l10n/app_localizations.dart';
 import '../models/calendar_event.dart';
 import '../models/rrule.dart';
 import '../services/event_repository.dart';
+import '../services/notification_service.dart';
 import '../utils/time_format.dart';
 
 /// Screen for creating or editing calendar events.
 ///
 /// Pass an existing [event] to edit mode, or omit it to create a new event.
 class EventFormScreen extends StatefulWidget {
-  const EventFormScreen({
-    super.key,
-    this.event,
-    required this.initialDate,
-  });
+  const EventFormScreen({super.key, this.event, required this.initialDate});
 
   /// The event to edit, or null to create a new event.
   final CalendarEvent? event;
@@ -223,6 +221,16 @@ class _EventFormScreenState extends State<EventFormScreen> {
       rrule: _buildRrule(),
     );
 
+    if (kIsWeb && event.hasReminder) {
+      NotificationService? notificationService;
+      try {
+        notificationService = context.read<NotificationService>();
+      } catch (_) {
+        notificationService = null;
+      }
+      await notificationService?.requestWebPermission();
+    }
+
     final repo = context.read<EventRepository>();
 
     if (widget.isEditing) {
@@ -275,8 +283,9 @@ class _EventFormScreenState extends State<EventFormScreen> {
             TextFormField(
               controller: _titleController,
               decoration: InputDecoration(labelText: l10n.title),
-              validator: (value) =>
-                  value == null || value.trim().isEmpty ? l10n.titleRequired : null,
+              validator: (value) => value == null || value.trim().isEmpty
+                  ? l10n.titleRequired
+                  : null,
               textInputAction: TextInputAction.next,
             ),
             const SizedBox(height: 12),
@@ -305,7 +314,9 @@ class _EventFormScreenState extends State<EventFormScreen> {
               onChanged: (value) => setState(() {
                 _draft.isAllDay = value;
                 if (value) {
-                  _draft.allDayNotificationTime = TimeOfDay.fromDateTime(_draft.start);
+                  _draft.allDayNotificationTime = TimeOfDay.fromDateTime(
+                    _draft.start,
+                  );
                   _adjustEndDateIfNeeded();
                 } else if (!_draft.end.isAfter(_draft.start)) {
                   _draft.end = _draft.start.add(const Duration(hours: 1));
@@ -341,7 +352,9 @@ class _EventFormScreenState extends State<EventFormScreen> {
             if (_draft.isAllDay)
               ListTile(
                 title: Text(l10n.notificationTime),
-                subtitle: Text(formatTimeOfDay(context, _draft.allDayNotificationTime)),
+                subtitle: Text(
+                  formatTimeOfDay(context, _draft.allDayNotificationTime),
+                ),
                 trailing: IconButton(
                   onPressed: _pickAllDayNotificationTime,
                   icon: const Icon(Icons.notifications_active),
@@ -353,7 +366,8 @@ class _EventFormScreenState extends State<EventFormScreen> {
             // Reminder dropdown
             _ReminderDropdown(
               value: _draft.reminderMinutes,
-              onChanged: (value) => setState(() => _draft.reminderMinutes = value),
+              onChanged: (value) =>
+                  setState(() => _draft.reminderMinutes = value),
             ),
 
             const SizedBox(height: 16),
@@ -384,10 +398,7 @@ class _EventFormScreenState extends State<EventFormScreen> {
             const SizedBox(height: 16),
 
             // Save button
-            FilledButton(
-              onPressed: _save,
-              child: Text(l10n.save),
-            ),
+            FilledButton(onPressed: _save, child: Text(l10n.save)),
           ],
         ),
       ),
@@ -447,10 +458,7 @@ class _DateTimeTile extends StatelessWidget {
 
 /// Dropdown for reminder selection.
 class _ReminderDropdown extends StatelessWidget {
-  const _ReminderDropdown({
-    required this.value,
-    required this.onChanged,
-  });
+  const _ReminderDropdown({required this.value, required this.onChanged});
 
   final int? value;
   final ValueChanged<int?> onChanged;
@@ -476,10 +484,7 @@ class _ReminderDropdown extends StatelessWidget {
 
 /// Dropdown for repeat selection.
 class _RepeatDropdown extends StatelessWidget {
-  const _RepeatDropdown({
-    required this.value,
-    required this.onChanged,
-  });
+  const _RepeatDropdown({required this.value, required this.onChanged});
 
   final RepeatChoice value;
   final ValueChanged<RepeatChoice?> onChanged;
@@ -495,9 +500,15 @@ class _RepeatDropdown extends StatelessWidget {
         DropdownMenuItem(value: RepeatChoice.none, child: Text(l10n.none)),
         DropdownMenuItem(value: RepeatChoice.daily, child: Text(l10n.daily)),
         DropdownMenuItem(value: RepeatChoice.weekly, child: Text(l10n.weekly)),
-        DropdownMenuItem(value: RepeatChoice.monthly, child: Text(l10n.monthly)),
+        DropdownMenuItem(
+          value: RepeatChoice.monthly,
+          child: Text(l10n.monthly),
+        ),
         DropdownMenuItem(value: RepeatChoice.yearly, child: Text(l10n.yearly)),
-        DropdownMenuItem(value: RepeatChoice.custom, child: Text(l10n.customRrule)),
+        DropdownMenuItem(
+          value: RepeatChoice.custom,
+          child: Text(l10n.customRrule),
+        ),
       ],
       onChanged: onChanged,
     );
@@ -519,13 +530,13 @@ enum RepeatChoice {
 
   /// Converts this choice to an RRULE string.
   String? toRrule() => switch (this) {
-        RepeatChoice.none => null,
-        RepeatChoice.daily => RRule.simple(RecurrenceFrequency.daily),
-        RepeatChoice.weekly => RRule.simple(RecurrenceFrequency.weekly),
-        RepeatChoice.monthly => RRule.simple(RecurrenceFrequency.monthly),
-        RepeatChoice.yearly => RRule.simple(RecurrenceFrequency.yearly),
-        RepeatChoice.custom => null,
-      };
+    RepeatChoice.none => null,
+    RepeatChoice.daily => RRule.simple(RecurrenceFrequency.daily),
+    RepeatChoice.weekly => RRule.simple(RecurrenceFrequency.weekly),
+    RepeatChoice.monthly => RRule.simple(RecurrenceFrequency.monthly),
+    RepeatChoice.yearly => RRule.simple(RecurrenceFrequency.yearly),
+    RepeatChoice.custom => null,
+  };
 
   /// Infers the repeat choice from an RRULE string.
   static RepeatChoice fromRrule(String? rrule) {
@@ -602,4 +613,3 @@ class _EventDraft {
     );
   }
 }
-
