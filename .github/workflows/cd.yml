@@ -20,7 +20,7 @@ env:
 
 jobs:
   android:
-    name: "Android (all ABIs + AAB) ✅"
+    name: "Android (all ABIs + AAB)"
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -75,7 +75,7 @@ jobs:
             build/app/outputs/bundle/release/*.aab
 
   web:
-    name: "Web (release) 🌐"
+    name: "Web (release)"
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -106,7 +106,7 @@ jobs:
           path: build/web
 
   macos:
-    name: "macOS (universal: x64 + arm64) 🍎"
+    name: "macOS (universal: x64 + arm64)"
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
@@ -143,7 +143,7 @@ jobs:
           path: release/macos-universal.zip
 
   windows:
-    name: "Windows (x64) 🪟"
+    name: "Windows (x64)"
     timeout-minutes: 30
     runs-on: windows-latest
     steps:
@@ -184,7 +184,7 @@ jobs:
           path: build/windows/x64/runner/Release/**
 
   linux:
-    name: "Linux (x64) 🐧"
+    name: "Linux (x64)"
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -231,7 +231,7 @@ jobs:
 
 
   create_release:
-    name: "Create GitHub Release & Upload Artifacts 🚀"
+    name: "Create GitHub Release & Upload Artifacts"
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: [android, macos, windows, linux, web]
@@ -357,7 +357,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-pages:
-    name: "Deploy Web to GitHub Pages 🌍"
+    name: "Deploy Web to GitHub Pages"
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: web
